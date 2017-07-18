@@ -1,6 +1,5 @@
 import {Collection, Serializer} from '@samizdatjs/tashmetu';
-import {FileSystem, FSStorageAdapter} from './interfaces';
-import {FileConfig} from './decorators';
+import {FileSystem, FSStorageAdapter, FileConfig} from './interfaces';
 import {each, intersection, difference, keys, isEqual, omit, pull, transform} from 'lodash';
 
 export class File implements FSStorageAdapter {

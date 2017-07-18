@@ -1,6 +1,5 @@
 import {Collection, Serializer} from '@samizdatjs/tashmetu';
-import {FileSystem, FSStorageAdapter} from './interfaces';
-import {DirectoryConfig} from './decorators';
+import {FileSystem, FSStorageAdapter, DirectoryConfig} from './interfaces';
 import {basename, dirname, join} from 'path';
 
 export class Directory implements FSStorageAdapter {

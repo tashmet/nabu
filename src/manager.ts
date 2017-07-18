@@ -1,7 +1,7 @@
-import {inject, provider, activate, Injector} from '@samizdatjs/tiamat';
-import {Collection, LocalDatabase, Serializer, CollectionBase} from '@samizdatjs/tashmetu';
-import {FileSystem, FSStorageAdapter} from './interfaces';
-import {basename, dirname, join} from 'path';
+import {inject, provider, Injector} from '@samizdatjs/tiamat';
+import {Collection, LocalDatabase} from '@samizdatjs/tashmetu';
+import {FileSystem, FSStorageAdapter, FileConfig, DirectoryConfig} from './interfaces';
+import {basename, dirname} from 'path';
 import {Directory} from './directory';
 import {File} from './file';
 
@@ -26,32 +26,24 @@ export class FSCollectionManager {
     });
   }
 
-  @activate('tashmetu.Directory')
-  public activateDirectory(obj: CollectionBase): CollectionBase {
-    let config = Reflect.getOwnMetadata('tashmetu:directory', obj.constructor);
+  public createDirectoryCollection(config: DirectoryConfig): Collection {
     let serializer = config.serializer(this.injector);
-    let cache = this.cache.createCollection(config.name);
-
-    obj.setCollection(cache);
+    let cache = this.cache.createCollection(config.path);
 
     this.collections[config.path] = new Directory(
       cache, serializer, this.fs, config);
 
-    return obj;
+    return cache;
   }
 
-  @activate('tashmetu.File')
-  public activateFile(obj: CollectionBase): CollectionBase {
-    let config = Reflect.getOwnMetadata('tashmetu:file', obj.constructor);
+  public createFileCollection(config: FileConfig): Collection {
     let serializer = config.serializer(this.injector);
-    let cache = this.cache.createCollection(config.name);
-
-    obj.setCollection(cache);
+    let cache = this.cache.createCollection(config.path);
 
     this.collections[config.path] = new File(
       cache, serializer, this.fs, config);
 
-    return obj;
+    return cache;
   }
 
   private getCollection(path: string): FSStorageAdapter {
