@@ -1,6 +1,6 @@
 {
   "name": "@samizdatjs/tashmetu-fs",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Tashmetu file system peristence",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -10,8 +10,8 @@
   "author": "Björn Andersson",
   "license": "MIT",
   "dependencies": {
-    "@samizdatjs/tashmetu": "0.17.0",
-    "@samizdatjs/tiamat": "0.4.0",
+    "@samizdatjs/tashmetu": "^0.17.1",
+    "@samizdatjs/tiamat": "^0.4.1",
     "bluebird": "^3.5.0",
     "chalk": "^1.1.3",
     "chokidar": "^1.6.1",
