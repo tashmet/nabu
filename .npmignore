@@ -1,0 +1,7 @@
+*.swp
+*.tgz
+node_modules
+src
+gulpfile.js
+tsconfig.json
+tslint.json

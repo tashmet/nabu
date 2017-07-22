@@ -5,6 +5,20 @@ import {basename, dirname} from 'path';
 import {Directory} from './directory';
 import {File} from './file';
 
+export function file(config: FileConfig) {
+  return (injector: Injector): Collection => {
+    return injector.get<FSCollectionManager>('tashmetu.FSCollectionManager')
+      .createFileCollection(config);
+  };
+}
+
+export function directory(config: DirectoryConfig) {
+  return (injector: Injector): Collection => {
+    return injector.get<FSCollectionManager>('tashmetu.FSCollectionManager')
+      .createDirectoryCollection(config);
+  };
+}
+
 @provider({
   for: 'tashmetu.FSCollectionManager',
   singleton: true

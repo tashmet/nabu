@@ -1,6 +1,6 @@
 {
   "name": "@samizdatjs/tashmetu-fs",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Tashmetu file system peristence",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -10,25 +10,26 @@
   "author": "Björn Andersson",
   "license": "MIT",
   "dependencies": {
-    "@samizdatjs/tashmetu": "^0.16.2",
-    "@samizdatjs/tiamat": "^0.3.9",
+    "@samizdatjs/tashmetu": "0.17.0",
+    "@samizdatjs/tiamat": "0.4.0",
+    "bluebird": "^3.5.0",
     "chalk": "^1.1.3",
     "chokidar": "^1.6.1",
     "fancy-log": "^1.3.0",
-    "lodash": "^4.17.4",
-    "reflect-metadata": "^0.1.9"
+    "lodash": "^4.17.4"
   },
   "devDependencies": {
+    "@types/bluebird": "^3.5.8",
     "@types/chalk": "^0.4.31",
     "@types/chokidar": "^1.4.30",
     "@types/lodash": "^4.14.45",
-    "@types/node": "6.0.54",
+    "@types/node": "8.0.14",
     "gulp": "^3.9.1",
-    "gulp-tslint": "^7.0.1",
+    "gulp-tslint": "^8.1.1",
     "gulp-typescript": "^3.1.4",
     "harmonize": "^2.0.0",
-    "run-sequence": "^1.2.2",
-    "tslint": "^4.4.2",
+    "run-sequence": "^2.0.0",
+    "tslint": "^5.4.0",
     "typescript": "^2.1.5"
   }
 }

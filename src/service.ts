@@ -2,7 +2,7 @@ import {provider} from '@samizdatjs/tiamat';
 import fs = require('fs');
 import * as chokidar from 'chokidar';
 import {relative, join} from 'path';
-import {EventEmitter} from '@samizdatjs/tashmetu';
+import {EventEmitter} from 'eventemitter3';
 import {FileSystem} from './interfaces';
 
 @provider({
