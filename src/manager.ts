@@ -1,5 +1,5 @@
-import {inject, provider, Injector} from '@samizdatjs/tiamat';
-import {Collection, LocalDatabase} from '@samizdatjs/tashmetu';
+import {inject, provider, Injector} from '@ziggurat/tiamat';
+import {Collection, LocalDatabase} from '@ziggurat/isimud';
 import {FileSystem, FSStorageAdapter, FileConfig, DirectoryConfig} from './interfaces';
 import {basename, dirname} from 'path';
 import {Directory} from './directory';
@@ -7,20 +7,20 @@ import {File} from './file';
 
 export function file(config: FileConfig) {
   return (injector: Injector): Collection => {
-    return injector.get<FSCollectionManager>('tashmetu.FSCollectionManager')
+    return injector.get<FSCollectionManager>('isimud.FSCollectionManager')
       .createFileCollection(config);
   };
 }
 
 export function directory(config: DirectoryConfig) {
   return (injector: Injector): Collection => {
-    return injector.get<FSCollectionManager>('tashmetu.FSCollectionManager')
+    return injector.get<FSCollectionManager>('isimud.FSCollectionManager')
       .createDirectoryCollection(config);
   };
 }
 
 @provider({
-  for: 'tashmetu.FSCollectionManager',
+  for: 'isimud.FSCollectionManager',
   singleton: true
 })
 export class FSCollectionManager {
@@ -29,8 +29,8 @@ export class FSCollectionManager {
 
   public constructor(
     @inject('tiamat.Injector') private injector: Injector,
-    @inject('tashmetu.LocalDatabase') private cache: LocalDatabase,
-    @inject('tashmetu.FileSystem') private fs: FileSystem
+    @inject('isimud.LocalDatabase') private cache: LocalDatabase,
+    @inject('isimud.FileSystem') private fs: FileSystem
   ) {
     fs.on('file-added', (path: string) => {
       this.update(path);

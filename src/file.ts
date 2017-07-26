@@ -1,4 +1,4 @@
-import {Collection, Serializer} from '@samizdatjs/tashmetu';
+import {Collection, Serializer} from '@ziggurat/isimud';
 import {FileSystem, FSStorageAdapter, FileConfig} from './interfaces';
 import {each, intersection, difference, keys, isEqual, omit, pull, transform} from 'lodash';
 

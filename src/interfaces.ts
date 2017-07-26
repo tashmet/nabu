@@ -1,5 +1,5 @@
-import {Injector} from '@samizdatjs/tiamat';
-import {Serializer} from '@samizdatjs/tashmetu';
+import {Injector} from '@ziggurat/tiamat';
+import {Serializer} from '@ziggurat/isimud';
 
 export interface FileSystem {
   readdir(path: string): string[];

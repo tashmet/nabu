@@ -1,4 +1,4 @@
-import {Collection, Serializer} from '@samizdatjs/tashmetu';
+import {Collection, Serializer} from '@ziggurat/isimud';
 import {FileSystem, FSStorageAdapter, DirectoryConfig} from './interfaces';
 import {basename, dirname, join} from 'path';
 
