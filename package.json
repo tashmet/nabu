@@ -1,7 +1,7 @@
 {
   "name": "@ziggurat/isimud-fs",
-  "version": "0.3.0",
-  "description": "Isimud file system peristence",
+  "version": "0.3.1",
+  "description": "Isimud file system persistence",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -10,7 +10,7 @@
   "author": "Björn Andersson",
   "license": "MIT",
   "dependencies": {
-    "@ziggurat/isimud": "^0.18.0",
+    "@ziggurat/isimud": "^0.19.0",
     "@ziggurat/tiamat": "^0.5.0",
     "bluebird": "^3.5.0",
     "chalk": "^1.1.3",
