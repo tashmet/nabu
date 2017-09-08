@@ -61,7 +61,7 @@ export class FSCollectionManager {
   }
 
   private getCollection(path: string): FSStorageAdapter {
-    if (path.indexOf('/') > 0) {
+    if (dirname(path).length > 0) {
       return this.collections[basename(dirname(path))];
     } else {
       return this.collections[path];
