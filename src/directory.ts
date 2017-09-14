@@ -1,6 +1,7 @@
 import {Collection, Serializer} from '@ziggurat/isimud';
 import {FileSystem, FSStorageAdapter, DirectoryConfig} from './interfaces';
 import {basename, dirname, join} from 'path';
+import * as Promise from 'bluebird';
 
 export class Directory implements FSStorageAdapter {
   public constructor(
@@ -9,21 +10,28 @@ export class Directory implements FSStorageAdapter {
     private fs: FileSystem,
     private config: DirectoryConfig
   ) {
-    try {
-      fs.readdir(config.path).forEach((name: string) => {
-        let doc = this.loadPath(join(config.path, name));
-        collection.upsert(doc);
+    fs.readDir(config.path).then((files: string[]) => {
+      files.forEach((file: string) => {
+        this.update(join(config.path, file));
       });
-    } catch (e) { return; }
+    });
   }
 
   public update(path: string): void {
     this.collection.upsert(this.loadPath(path));
   }
 
-  private loadPath(path: string): any {
-    let doc: any = this.serializer.parse(this.fs.read(path));
-    doc._id = basename(path).split('.')[0];
-    return doc;
+  private loadPath(path: string): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.fs.readFile(path)
+        .then((data: string) => {
+          let doc: any = this.serializer.parse(data);
+          doc._id = basename(path).split('.')[0];
+          resolve(doc);
+        })
+        .catch(err => {
+          reject(err);
+        });
+    });
   }
 }

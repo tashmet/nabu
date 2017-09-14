@@ -27,18 +27,18 @@ export class File implements FSStorageAdapter {
 
   public update(path: string): void {
     if (!this.storing) {
-      let dict = this.readFile();
+      this.readFile().then((dict: any) => {
+        this.fetchCachedDict((cachedDict: any) => {
+          let comp = this.compareDicts(dict, cachedDict);
 
-      this.fetchCachedDict((cachedDict: any) => {
-        let comp = this.compareDicts(dict, cachedDict);
+          each(comp.update, (doc: any, id: string) => {
+            doc._id = id;
+            this.upsertQueue.push(id);
+            this.collection.upsert(doc);
+          });
 
-        each(comp.update, (doc: any, id: string) => {
-          doc._id = id;
-          this.upsertQueue.push(id);
-          this.collection.upsert(doc);
+          // TODO: Remove items from comp.remove
         });
-
-        // TODO: Remove items from comp.remove
       });
     }
     this.storing = false;
@@ -73,11 +73,15 @@ export class File implements FSStorageAdapter {
       });
   }
 
-  private readFile(): Object {
-    try {
-      return this.serializer.parse(this.fs.read(this.config.path));
-    } catch (e) {
-      return {};
-    }
+  private readFile(): Promise<object> {
+    return new Promise<object>((resolve, reject) => {
+      this.fs.readFile(this.config.path)
+        .then((data: string) => {
+          resolve(this.serializer.parse(data));
+        })
+        .catch(err => {
+          reject(err);
+        });
+    });
   }
 }

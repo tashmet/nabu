@@ -1,10 +1,11 @@
 import {Injector} from '@ziggurat/tiamat';
 import {Serializer} from '@ziggurat/isimud';
+import * as Promise from 'bluebird';
 
 export interface FileSystem {
-  readdir(path: string): string[];
-  read(path: string): any;
-  write(data: string, path: string): void;
+  readDir(path: string): Promise<string[]>;
+  readFile(path: string): Promise<string>;
+  write(data: string, path: string): Promise<void>;
 
   on(event: 'file-added', fn: (path: string) => void): FileSystem;
   on(event: 'file-changed', fn: (path: string) => void): FileSystem;

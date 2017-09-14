@@ -4,6 +4,7 @@ import * as chokidar from 'chokidar';
 import {relative, join} from 'path';
 import {EventEmitter} from 'eventemitter3';
 import {FileSystem} from './interfaces';
+import * as Promise from 'bluebird';
 
 @provider({
   for: 'isimud.FileSystem',
@@ -32,18 +33,43 @@ export class FileSystemService extends EventEmitter implements FileSystem {
       });
   }
 
-  public readdir(path: string): any {
-    return fs.readdirSync(join(process.cwd(), 'content', path));
+  public readDir(path: string): Promise<string[]> {
+    path = join(process.cwd(), 'content', path);
+    return new Promise<string[]>((resolve, reject) => {
+      fs.readdir(path, (err, files: string[]) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(files);
+        }
+      });
+    });
   }
 
-  public read(path: string): any {
+  public readFile(path: string): Promise<string> {
     let file = join(process.cwd(), 'content', path);
-    return fs.readFileSync(file, 'utf8');
+    return new Promise<string>((resolve, reject) => {
+      fs.readFile(file, 'utf8', (err, data: string) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(data);
+        }
+      });
+    });
   }
 
-  public write(data: string, path: string): void {
+  public write(data: string, path: string): Promise<void> {
     let relPath = join('content', path);
-    fs.writeFileSync(join(process.cwd(), relPath), data, {encoding: 'utf8'});
-    this.emit('file-stored', data, relPath);
+    return new Promise<void>((resolve, reject) => {
+      fs.writeFile(join(process.cwd(), relPath), data, {encoding: 'utf8'}, (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          this.emit('file-stored', data, relPath);
+          resolve();
+        }
+      });
+    });
   }
 }
