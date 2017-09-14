@@ -50,4 +50,14 @@ describe('FileSystemService', () => {
       return expect(fs.readDir('file1')).to.be.rejected;
     });
   });
+
+  describe('writeFile', () => {
+    it('should write to a file', () => {
+      return fs.writeFile('file1', 'new contents').then(() => {
+        return fs.readFile('file1').then(data => {
+          expect(data).to.eql('new contents');
+        });
+      });
+    });
+  });
 });
