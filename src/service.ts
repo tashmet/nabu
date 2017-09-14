@@ -59,7 +59,7 @@ export class FileSystemService extends EventEmitter implements FileSystem {
     });
   }
 
-  public writeFile(data: string, path: string): Promise<void> {
+  public writeFile(path: string, data: string): Promise<void> {
     let relPath = join('content', path);
     return new Promise<void>((resolve, reject) => {
       fs.writeFile(join(process.cwd(), relPath), data, {encoding: 'utf8'}, (err) => {
