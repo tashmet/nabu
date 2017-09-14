@@ -18,7 +18,9 @@ export class Directory implements FSStorageAdapter {
   }
 
   public update(path: string): void {
-    this.collection.upsert(this.loadPath(path));
+    this.loadPath(path).then(doc => {
+      this.collection.upsert(doc);
+    });
   }
 
   private loadPath(path: string): Promise<any> {
