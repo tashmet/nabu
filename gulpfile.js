@@ -3,6 +3,7 @@
 var gulp        = require('gulp'),
     tslint      = require('gulp-tslint'),
     tsc         = require('gulp-typescript'),
+    exec        = require('child_process').exec,
     runSequence = require('run-sequence');
 
 // Lint
@@ -14,6 +15,16 @@ gulp.task('lint', function() {
   ])
   .pipe(tslint(config))
   .pipe(tslint.report());
+});
+
+// Test
+//-----------------------------------------------------------------------------
+gulp.task('test', function(cb) {
+  exec('npm test', function (err, stdout, stderr) {
+    console.log(stdout);
+    console.log(stderr);
+    cb();
+  });
 });
 
 var tstProject = tsc.createProject('tsconfig.json', {
@@ -55,5 +66,5 @@ gulp.task('build-dts', function() {
 // Default
 //-----------------------------------------------------------------------------
 gulp.task('default', function (cb) {
-  runSequence('lint', ['build', 'build-dts'], cb);
+  runSequence('lint', 'test', ['build', 'build-dts'], cb);
 });
