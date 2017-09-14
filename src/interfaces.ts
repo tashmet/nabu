@@ -5,7 +5,7 @@ import * as Promise from 'bluebird';
 export interface FileSystem {
   readDir(path: string): Promise<string[]>;
   readFile(path: string): Promise<string>;
-  write(data: string, path: string): Promise<void>;
+  writeFile(data: string, path: string): Promise<void>;
 
   on(event: 'file-added', fn: (path: string) => void): FileSystem;
   on(event: 'file-changed', fn: (path: string) => void): FileSystem;
