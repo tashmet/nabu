@@ -1,4 +1,4 @@
-import {Collection, Serializer} from '@ziggurat/isimud';
+import {Collection, Document, Serializer} from '@ziggurat/isimud';
 import {FileSystem, FSStorageAdapter, DirectoryConfig} from './interfaces';
 import {basename, dirname, join} from 'path';
 import * as Promise from 'bluebird';
@@ -27,7 +27,10 @@ export class Directory implements FSStorageAdapter {
     return new Promise<any>((resolve, reject) => {
       this.fs.readFile(path)
         .then((data: string) => {
-          let doc: any = this.serializer.parse(data);
+          return this.serializer.deserialize(data);
+        })
+        .then(obj => {
+          const doc = <Document>obj;
           doc._id = basename(path).split('.')[0];
           resolve(doc);
         })

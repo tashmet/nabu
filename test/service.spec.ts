@@ -9,15 +9,18 @@ chai.use(chaiAsPromised);
 
 describe('FileSystemService', () => {
   let fs = new FileSystemService();
-  mockfs({
-    content: {
-      file1: 'file1 contents',
-      subdir: {
-        file2: 'file2 contents',
-        file3: 'file3 contents'
+
+  before(() => {
+    mockfs({
+      content: {
+        file1: 'file1 contents',
+        subdir: {
+          file2: 'file2 contents',
+          file3: 'file3 contents'
+        }
       }
-    }
-  })
+    });
+  });
 
   after(() => {
     mockfs.restore();

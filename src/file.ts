@@ -16,7 +16,9 @@ export class File implements FSStorageAdapter {
       if (this.upsertQueue.indexOf(doc._id) < 0) {
         this.fetchCachedDict((dict: any) => {
           this.storing = true;
-          fs.writeFile(config.path, serializer.serialize(dict));
+          serializer.serialize(dict).then(data => {
+            fs.writeFile(config.path, data);
+          });
         });
       }
       pull(this.upsertQueue, doc._id);
@@ -77,7 +79,7 @@ export class File implements FSStorageAdapter {
     return new Promise<object>((resolve, reject) => {
       this.fs.readFile(this.config.path)
         .then((data: string) => {
-          resolve(this.serializer.parse(data));
+          return this.serializer.deserialize(data);
         })
         .catch(err => {
           reject(err);
