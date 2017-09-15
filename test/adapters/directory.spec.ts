@@ -16,11 +16,6 @@ describe('Directory', () => {
   let serializerProvider = json();
   let serializer = serializerProvider(<Injector>{});
 
-  let dir = new Directory(serializer, fs, {
-    path: 'testdir',
-    extension: 'json',
-    serializer: json()
-  });
 
   before(() => {
     mockfs({
@@ -39,6 +34,12 @@ describe('Directory', () => {
 
   describe('read', () => {
     it('should read documents from file system', () => {
+      let dir = new Directory(serializer, fs, {
+        path: 'testdir',
+        extension: 'json',
+        serializer: json()
+      });
+
       return dir.read().then((docs: Document[]) => {
         expect(docs).to.have.lengthOf(2);
         expect(docs).to.have.deep.members([
@@ -46,6 +47,16 @@ describe('Directory', () => {
           {_id: 'doc2', foo: 'bar'}
         ]);
       });
+    });
+
+    it('should fail to read documents from directory that does not exist', () => {
+      let dir = new Directory(serializer, fs, {
+        path: 'noSuchDir',
+        extension: 'json',
+        serializer: json()
+      });
+
+      return expect(dir.read()).to.be.rejected;
     });
   });
 });
