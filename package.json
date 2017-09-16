@@ -1,6 +1,6 @@
 {
   "name": "@ziggurat/isimud-fs",
-  "version": "0.3.17",
+  "version": "0.3.18",
   "description": "Isimud file system persistence",
   "scripts": {
     "test": "mocha --opts mocha.opts"
@@ -11,7 +11,7 @@
   "license": "MIT",
   "dependencies": {
     "@ziggurat/isimud": "^0.22.0",
-    "@ziggurat/isimud-persistence": "^0.1.4",
+    "@ziggurat/isimud-persistence": "^0.1.6",
     "@ziggurat/tiamat": "^0.5.0",
     "bluebird": "^3.5.0",
     "chalk": "^1.1.3",
