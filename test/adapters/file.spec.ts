@@ -2,6 +2,7 @@ import {Injector} from '@ziggurat/tiamat';
 import {Collection, Document, Serializer, json} from '@ziggurat/isimud';
 import {File} from '../../src/adapters/file';
 import {FileSystemService} from '../../src/service';
+import {MockContentDir} from '../mocks';
 import {expect} from 'chai';
 import 'mocha';
 import * as mockfs from 'mock-fs';
@@ -16,11 +17,8 @@ describe('File', () => {
   let serializer = json()(<Injector>{});
 
   before(() => {
-    mockfs({
-      content: {
-        'collection.json': '{"doc1": {"foo": "bar"}, "doc2": {"foo": "bar"}}',
-      }
-    });
+    let content = new MockContentDir(fs)
+      .writeFile('collection.json', '{"doc1": {"foo": "bar"}, "doc2": {"foo": "bar"}}')
   });
 
   after(() => {
