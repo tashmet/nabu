@@ -23,7 +23,7 @@ describe('File', () => {
 
     before(() => {
       let content = new MockContentDir(fs)
-        .writeFile('collection.json', '{"doc1": {"foo": "bar"}, "doc2": {"foo": "bar"}}')
+        .writeFile('collection.json', '{"doc1": {"foo": "bar"}, "doc2": {"foo": "bar"}}');
     });
 
     it('should read documents from file system', () => {
@@ -61,6 +61,28 @@ describe('File', () => {
         });
 
       content.writeFile('collection.json', '{"doc1": {}}');
+    });
+  });
+
+  describe('file-changed event from FileSystemService', () => {
+    let fs = new FileSystemService();
+    let content: MockContentDir;
+
+    before(() => {
+      content = new MockContentDir(fs)
+        .writeFile('collection.json', '{"doc1": {}, "doc2": {}}');
+    });
+
+    it('should trigger document-updated event', (done) => {
+      let file = new File(serializer, fs, 'collection.json');
+      file.read().then((docs: Document[]) => {
+        file.on('document-updated', (doc: Document) => {
+          expect(doc).to.eql({_id: 'doc2', foo: 'new content'});
+          done();
+        });
+
+        content.writeFile('collection.json', '{"doc1": {}, "doc2": {"foo": "new content"}}');
+      });
     });
   });
 });
