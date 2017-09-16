@@ -13,9 +13,7 @@ chai.use(chaiAsPromised);
 
 describe('Directory', () => {
   let fs = new FileSystemService();
-  let serializerProvider = json();
-  let serializer = serializerProvider(<Injector>{});
-
+  let serializer = json()(<Injector>{});
 
   before(() => {
     mockfs({
@@ -34,11 +32,7 @@ describe('Directory', () => {
 
   describe('read', () => {
     it('should read documents from file system', () => {
-      let dir = new Directory(serializer, fs, {
-        path: 'testdir',
-        extension: 'json',
-        serializer: json()
-      });
+      let dir = new Directory(serializer, fs, 'testdir', 'json');
 
       return dir.read().then((docs: Document[]) => {
         expect(docs).to.have.lengthOf(2);
@@ -50,11 +44,7 @@ describe('Directory', () => {
     });
 
     it('should fail to read documents from directory that does not exist', () => {
-      let dir = new Directory(serializer, fs, {
-        path: 'noSuchDir',
-        extension: 'json',
-        serializer: json()
-      });
+      let dir = new Directory(serializer, fs, 'noSuchDir', 'json');
 
       return expect(dir.read()).to.be.rejected;
     });
