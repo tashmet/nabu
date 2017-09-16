@@ -14,9 +14,9 @@ export class Directory extends EventEmitter implements PersistenceAdapter {
     private extension: string
   ) {
     super();
-
     fs.on('file-added',   (filePath: string) => { this.onFileUpdated(filePath); });
     fs.on('file-changed', (filePath: string) => { this.onFileUpdated(filePath); });
+    fs.on('file-removed', (filePath: string) => { this.onFileRemoved(filePath); });
   }
 
   public read(): Promise<Document[]> {
@@ -48,16 +48,26 @@ export class Directory extends EventEmitter implements PersistenceAdapter {
       })
       .then(obj => {
         const doc = <Document>obj;
-        doc._id = basename(path).split('.')[0];
+        doc._id = this.getId(path);
         return doc;
       });
   }
 
-  private onFileUpdated(filePath: string) {
-    if (basename(dirname(filePath)) === this.path) {
-      this.loadFile(filePath).then((doc: Document) => {
-        this.emit('document-upserted', doc);
+  private onFileUpdated(path: string) {
+    if (basename(dirname(path)) === this.path) {
+      this.loadFile(path).then((doc: Document) => {
+        this.emit('document-updated', doc);
       });
     }
+  }
+
+  private onFileRemoved(path: string) {
+    if (basename(dirname(path)) === this.path) {
+      this.emit('document-removed', this.getId(path));
+    }
+  }
+
+  private getId(path: string): string {
+    return basename(path).split('.')[0];
   }
 }

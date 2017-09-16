@@ -11,7 +11,7 @@
   "license": "MIT",
   "dependencies": {
     "@ziggurat/isimud": "^0.22.0",
-    "@ziggurat/isimud-persistence": "^0.1.6",
+    "@ziggurat/isimud-persistence": "^0.2.0",
     "@ziggurat/tiamat": "^0.5.0",
     "bluebird": "^3.5.0",
     "chalk": "^1.1.3",

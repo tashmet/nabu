@@ -32,6 +32,13 @@ class MockContentDir {
     this.fs.emit(event, join(this.path, name));
     return this;
   }
+
+  public removeFile(name: string): MockContentDir {
+    delete(this.dir[name]);
+    mockfs({content: this.tree});
+    this.fs.emit('file-removed', join(this.path, name));
+    return this;
+  }
 }
 
 describe('Directory', () => {
@@ -77,9 +84,9 @@ describe('Directory', () => {
       content = new MockContentDir(fs, 'testdir');
     });
 
-    it('should trigger document-upserted event', (done) => {
+    it('should trigger document-updated event', (done) => {
       new Directory(serializer, fs, 'testdir', 'json')
-        .on('document-upserted', (doc: Document) => {
+        .on('document-updated', (doc: Document) => {
           expect(doc).to.eql({_id: 'doc1'});
           done();
         });
@@ -97,14 +104,34 @@ describe('Directory', () => {
         .writeFile('doc1.json', '{}')
     });
 
-    it('should trigger document-upserted event', (done) => {
+    it('should trigger document-updated event', (done) => {
       new Directory(serializer, fs, 'testdir', 'json')
-        .on('document-upserted', (doc: Document) => {
+        .on('document-updated', (doc: Document) => {
           expect(doc).to.eql({_id: 'doc1', foo: 'new content'});
           done();
         });
 
       content.writeFile('doc1.json', '{"foo": "new content"}');
+    });
+  });
+
+  describe('file-removed event from FileSystemService', () => {
+    let fs = new FileSystemService();
+    let content: MockContentDir;
+
+    before(() => {
+      content = new MockContentDir(fs, 'testdir')
+        .writeFile('doc1.json', '{}')
+    });
+
+    it('should trigger document-removed event', (done) => {
+      new Directory(serializer, fs, 'testdir', 'json')
+        .on('document-removed', (id: string) => {
+          expect(id).to.eql('doc1');
+          done();
+        });
+
+      content.removeFile('doc1.json');
     });
   });
 });
