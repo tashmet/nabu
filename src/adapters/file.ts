@@ -29,14 +29,9 @@ export class File extends EventEmitter implements PersistenceAdapter {
   }
 
   private readFile(): Promise<object> {
-    return new Promise<object>((resolve, reject) => {
-      this.fs.readFile(this.path)
-        .then((data: string) => {
-          return this.serializer.deserialize(data);
-        })
-        .catch(err => {
-          reject(err);
-        });
-    });
+    return this.fs.readFile(this.path)
+      .then((data: string) => {
+        return this.serializer.deserialize(data);
+      });
   }
 }
