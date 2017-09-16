@@ -2,7 +2,7 @@ import {Document, Serializer} from '@ziggurat/isimud';
 import {PersistenceAdapter} from '@ziggurat/isimud-persistence';
 import {FileSystem} from '../interfaces';
 import {EventEmitter} from 'eventemitter3';
-import {join} from 'path';
+import {basename, dirname, join} from 'path';
 import {map} from 'lodash';
 import * as Promise from 'bluebird';
 
@@ -14,13 +14,21 @@ export class Directory extends EventEmitter implements PersistenceAdapter {
     private extension: string
   ) {
     super();
+
+    fs.on('file-added', (filePath: string) => {
+      if (basename(dirname(filePath)) === this.path) {
+        this.loadFile(filePath).then((doc: Document) => {
+          this.emit('document-upserted', doc);
+        });
+      }
+    });
   }
 
   public read(): Promise<Document[]> {
     return this.fs.readDir(this.path)
       .then((files: string[]) => {
         const promises = map(files, file => {
-          return this.loadFile(file);
+          return this.loadFile(join(this.path, file));
         });
         return Promise.all(promises);
       });
@@ -39,13 +47,13 @@ export class Directory extends EventEmitter implements PersistenceAdapter {
   }
 
   private loadFile(path: string): Promise<Document> {
-    return this.fs.readFile(join(this.path, path))
+    return this.fs.readFile(path)
       .then(data => {
         return this.serializer.deserialize(data);
       })
       .then(obj => {
         const doc = <Document>obj;
-        doc._id = path.split('.')[0];
+        doc._id = basename(path).split('.')[0];
         return doc;
       });
   }
