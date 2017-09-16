@@ -15,13 +15,8 @@ export class Directory extends EventEmitter implements PersistenceAdapter {
   ) {
     super();
 
-    fs.on('file-added', (filePath: string) => {
-      if (basename(dirname(filePath)) === this.path) {
-        this.loadFile(filePath).then((doc: Document) => {
-          this.emit('document-upserted', doc);
-        });
-      }
-    });
+    fs.on('file-added',   (filePath: string) => { this.onFileUpdated(filePath); });
+    fs.on('file-changed', (filePath: string) => { this.onFileUpdated(filePath); });
   }
 
   public read(): Promise<Document[]> {
@@ -56,5 +51,13 @@ export class Directory extends EventEmitter implements PersistenceAdapter {
         doc._id = basename(path).split('.')[0];
         return doc;
       });
+  }
+
+  private onFileUpdated(filePath: string) {
+    if (basename(dirname(filePath)) === this.path) {
+      this.loadFile(filePath).then((doc: Document) => {
+        this.emit('document-upserted', doc);
+      });
+    }
   }
 }

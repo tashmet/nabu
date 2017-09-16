@@ -13,23 +13,23 @@ chai.use(chaiAsPromised);
 
 class MockContentDir {
   private tree: any = {};
+  private dir: any = this.tree;
+  private path = '';
 
-  public constructor(private fs: FileSystemService) {
+  public constructor(private fs: FileSystemService, subDir?: string) {
+    if (subDir) {
+      this.tree[subDir] = {};
+      this.dir = this.tree[subDir];
+      this.path = subDir;
+    }
     mockfs({content: this.tree});
   }
 
-  public writeFile(name: string, content: string, subdir?: string): MockContentDir {
-    if (subdir) {
-      if (!(subdir in this.tree)) {
-        this.tree[subdir] = {};
-      }
-      this.tree[subdir][name] = content;
-    } else {
-      this.tree[name] = content;
-    }
+  public writeFile(name: string, content: string): MockContentDir {
+    let event = (name in this.dir) ? 'file-changed' : 'file-added';
+    this.dir[name] = content;
     mockfs({content: this.tree});
-    let path = subdir ? join(subdir, name) : name;
-    this.fs.emit('file-added', path);
+    this.fs.emit(event, join(this.path, name));
     return this;
   }
 }
@@ -45,9 +45,9 @@ describe('Directory', () => {
     let fs = new FileSystemService();
 
     before(() => {
-      let content = new MockContentDir(fs)
-        .writeFile('doc1.json', '{"foo": "bar"}', 'testdir')
-        .writeFile('doc2.json', '{"foo": "bar"}', 'testdir');
+      let content = new MockContentDir(fs, 'testdir')
+        .writeFile('doc1.json', '{"foo": "bar"}')
+        .writeFile('doc2.json', '{"foo": "bar"}');
     });
 
     it('should read documents from file system', () => {
@@ -74,7 +74,7 @@ describe('Directory', () => {
     let content: MockContentDir;
 
     before(() => {
-      content = new MockContentDir(fs);
+      content = new MockContentDir(fs, 'testdir');
     });
 
     it('should trigger document-upserted event', (done) => {
@@ -84,7 +84,27 @@ describe('Directory', () => {
           done();
         });
 
-      content.writeFile('doc1.json', '{}', 'testdir');
+      content.writeFile('doc1.json', '{}');
+    });
+  });
+
+  describe('file-changed event from FileSystemService', () => {
+    let fs = new FileSystemService();
+    let content: MockContentDir;
+
+    before(() => {
+      content = new MockContentDir(fs, 'testdir')
+        .writeFile('doc1.json', '{}')
+    });
+
+    it('should trigger document-upserted event', (done) => {
+      new Directory(serializer, fs, 'testdir', 'json')
+        .on('document-upserted', (doc: Document) => {
+          expect(doc).to.eql({_id: 'doc1', foo: 'new content'});
+          done();
+        });
+
+      content.writeFile('doc1.json', '{"foo": "new content"}');
     });
   });
 });
