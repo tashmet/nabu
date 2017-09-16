@@ -85,4 +85,26 @@ describe('File', () => {
       });
     });
   });
+
+  describe('file-changed event from FileSystemService', () => {
+    let fs = new FileSystemService();
+    let content: MockContentDir;
+
+    before(() => {
+      content = new MockContentDir(fs)
+        .writeFile('collection.json', '{"doc1": {}, "doc2": {}}');
+    });
+
+    it('should trigger document-removed event', (done) => {
+      let file = new File(serializer, fs, 'collection.json');
+      file.read().then((docs: Document[]) => {
+        file.on('document-removed', (id: string) => {
+          expect(id).to.eql('doc2');
+          done();
+        });
+
+        content.writeFile('collection.json', '{"doc1": {}}');
+      });
+    });
+  });
 });

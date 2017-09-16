@@ -20,7 +20,6 @@ export class File extends EventEmitter implements PersistenceAdapter {
 
   public read(): Promise<Document[]> {
     return this.readFile().then((dict: any) => {
-      this.content = cloneDeep(dict);
       return this.getDocuments(dict);
     });
   }
@@ -34,6 +33,10 @@ export class File extends EventEmitter implements PersistenceAdapter {
     return this.fs.readFile(this.path)
       .then((data: string) => {
         return this.serializer.deserialize(data);
+      })
+      .then((dict: any) => {
+        this.content = cloneDeep(dict);
+        return dict;
       });
   }
 
@@ -56,32 +59,31 @@ export class File extends EventEmitter implements PersistenceAdapter {
 
   private onFileChanged(path: string) {
     if (path === this.path) {
-      const oldContent = this.content;
-      this.read().then((docs: Document[]) => {
-        const comp = this.compareDicts(this.content, oldContent);
-        this.getDocuments(comp.update).forEach(doc => {
+      const old = this.content;
+      this.readFile().then(() => {
+        this.getDocuments(this.getUpdated(old)).forEach(doc => {
           this.emit('document-updated', doc);
+        });
+        this.getRemoved(old).forEach((id: string) => {
+          this.emit('document-removed', id);
         });
       });
     }
   }
 
-  private compareDicts(file: any, cache: any): any {
+  private getUpdated(old: any): any {
     let update: any = {};
-    let remove: any[] = [];
 
-    intersection(keys(file), keys(cache)).forEach((id: string) => {
-      if (!isEqual(file[id], cache[id])) {
-        update[id] = file[id];
+    intersection(keys(this.content), keys(old)).forEach((id: string) => {
+      if (!isEqual(this.content[id], old[id])) {
+        update[id] = this.content[id];
       }
     });
-    difference(keys(file), keys(cache)).forEach((id: string) => {
-      if (file[id]) {
-        update[id] = file[id];
-      } else {
-        remove.push(id);
-      }
-    });
-    return {update, remove};
+
+    return update;
+  }
+
+  private getRemoved(old: any): string[] {
+    return difference(keys(old), keys(this.content));
   }
 }
