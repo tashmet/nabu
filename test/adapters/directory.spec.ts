@@ -46,7 +46,7 @@ describe('Directory', () => {
     });
   });
 
-  describe('file-added event from FileSystemService', () => {
+  describe('file added in directory', () => {
     let fs = new FileSystemService();
     let content: MockContentDir;
 
@@ -65,7 +65,7 @@ describe('Directory', () => {
     });
   });
 
-  describe('file-changed event from FileSystemService', () => {
+  describe('file updated in directory', () => {
     let fs = new FileSystemService();
     let content: MockContentDir;
 
@@ -85,7 +85,7 @@ describe('Directory', () => {
     });
   });
 
-  describe('file-removed event from FileSystemService', () => {
+  describe('file removed in diretory', () => {
     let fs = new FileSystemService();
     let content: MockContentDir;
 
