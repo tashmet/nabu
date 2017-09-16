@@ -1,17 +1,15 @@
-export {FileSystem} from './interfaces';
-export {file, directory} from './manager';
-export {FileConfig, DirectoryConfig} from './interfaces';
+export {file} from './sources/file';
+export {directory} from './sources/directory';
+export * from './interfaces';
 
 import {component} from '@ziggurat/tiamat';
 import {FileSystemService} from './service';
 import {FileSystemReporter} from './reporter';
-import {FSCollectionManager} from './manager';
 
 @component({
   providers: [
     FileSystemService,
-    FileSystemReporter,
-    FSCollectionManager
+    FileSystemReporter
   ]
 })
 export class IsimudFS {}

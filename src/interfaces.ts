@@ -1,5 +1,4 @@
-import {Injector} from '@ziggurat/tiamat';
-import {Serializer} from '@ziggurat/isimud';
+import {SerializerProvider} from '@ziggurat/isimud';
 import * as Promise from 'bluebird';
 
 export interface FileSystem {
@@ -14,13 +13,9 @@ export interface FileSystem {
   on(event: 'ready', fn: () => void): FileSystem;
 }
 
-export interface FSStorageAdapter {
-  update(path: string): void;
-}
-
-export interface FileSystemCollectionConfig {
+export interface DirectoryConfig {
   /**
-   * Path to file/directory.
+   * Path to directory.
    */
   path: string;
 
@@ -28,14 +23,23 @@ export interface FileSystemCollectionConfig {
    * A serializer provider creating a serializer that will parse and serialize
    * documents when reading from and writing to the file system.
    */
-  serializer: (injector: Injector) => Serializer;
-}
+  serializer: SerializerProvider;
 
-export interface DirectoryConfig extends FileSystemCollectionConfig {
   /**
    * file extension of files in the directory.
    */
   extension: string;
 }
 
-export interface FileConfig extends FileSystemCollectionConfig {}
+export interface FileConfig {
+  /**
+   * Path to file.
+   */
+  path: string;
+
+  /**
+   * A serializer provider creating a serializer that will parse and serialize
+   * documents when reading from and writing to the file system.
+   */
+  serializer: SerializerProvider;
+}
