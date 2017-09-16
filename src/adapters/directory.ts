@@ -1,6 +1,6 @@
-import {Collection, Document, Serializer, QueryOptions} from '@ziggurat/isimud';
+import {Document, Serializer} from '@ziggurat/isimud';
 import {PersistenceAdapter} from '@ziggurat/isimud-persistence';
-import {FileSystem, DirectoryConfig} from '../interfaces';
+import {FileSystem} from '../interfaces';
 import {EventEmitter} from 'eventemitter3';
 import {join} from 'path';
 import {map} from 'lodash';
