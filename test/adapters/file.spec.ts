@@ -11,21 +11,21 @@ import * as chaiAsPromised from 'chai-as-promised';
 
 chai.use(chaiAsPromised);
 
-
 describe('File', () => {
-  let fs = new FileSystemService();
   let serializer = json()(<Injector>{});
-
-  before(() => {
-    let content = new MockContentDir(fs)
-      .writeFile('collection.json', '{"doc1": {"foo": "bar"}, "doc2": {"foo": "bar"}}')
-  });
 
   after(() => {
     mockfs.restore();
   });
 
   describe('read', () => {
+    let fs = new FileSystemService();
+
+    before(() => {
+      let content = new MockContentDir(fs)
+        .writeFile('collection.json', '{"doc1": {"foo": "bar"}, "doc2": {"foo": "bar"}}')
+    });
+
     it('should read documents from file system', () => {
       let file = new File(serializer, fs, 'collection.json');
 
@@ -42,6 +42,25 @@ describe('File', () => {
       let file = new File(serializer, fs, 'noSuchFile.json');
 
       return expect(file.read()).to.be.rejected;
+    });
+  });
+
+  describe('file-added event from FileSystemService', () => {
+    let fs = new FileSystemService();
+    let content: MockContentDir;
+
+    before(() => {
+      content = new MockContentDir(fs);
+    });
+
+    it('should trigger document-updated event', (done) => {
+      new File(serializer, fs, 'collection.json')
+        .on('document-updated', (doc: Document) => {
+          expect(doc).to.eql({_id: 'doc1'});
+          done();
+        });
+
+      content.writeFile('collection.json', '{"doc1": {}}');
     });
   });
 });

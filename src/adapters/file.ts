@@ -12,6 +12,7 @@ export class File extends EventEmitter implements PersistenceAdapter {
     private path: string
   ) {
     super();
+    fs.on('file-added',   (filePath: string) => { this.onFileUpdated(filePath); });
   }
 
   public read(): Promise<Document[]> {
@@ -33,5 +34,15 @@ export class File extends EventEmitter implements PersistenceAdapter {
       .then((data: string) => {
         return this.serializer.deserialize(data);
       });
+  }
+
+  private onFileUpdated(path: string) {
+    if (path === this.path) {
+      this.read().then((docs: Document[]) => {
+        docs.forEach(doc => {
+          this.emit('document-updated', doc);
+        });
+      });
+    }
   }
 }
