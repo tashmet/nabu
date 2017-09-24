@@ -1,6 +1,6 @@
 {
   "name": "@ziggurat/isimud-fs",
-  "version": "0.4.8",
+  "version": "0.4.9",
   "description": "Isimud file system persistence",
   "scripts": {
     "test": "mocha --opts mocha.opts"
@@ -10,7 +10,6 @@
   "author": "Björn Andersson",
   "license": "MIT",
   "dependencies": {
-    "@ziggurat/isimud": "^0.22.0",
     "@ziggurat/isimud-persistence": "^0.2.0",
     "@ziggurat/tiamat": "^0.5.0",
     "bluebird": "^3.5.0",
@@ -29,6 +28,7 @@
     "@types/mocha": "^2.2.41",
     "@types/mock-fs": "^3.6.30",
     "@types/node": "8.0.14",
+    "@ziggurat/isimud": "^0.22.0",
     "chai": "^4.0.2",
     "chai-as-promised": "^7.1.1",
     "gulp": "^3.9.1",
@@ -41,5 +41,8 @@
     "ts-node": "^3.0.6",
     "tslint": "^5.4.0",
     "typescript": "^2.1.5"
+  },
+  "peerDependencies": {
+    "@ziggurat/isimud": "^0.22.0"
   }
 }
