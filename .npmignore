@@ -2,6 +2,7 @@
 *.tgz
 node_modules
 src
+test
 gulpfile.js
 tsconfig.json
 tslint.json
