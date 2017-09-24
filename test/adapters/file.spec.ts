@@ -38,10 +38,12 @@ describe('File', () => {
       });
     });
 
-    it('should fail to read documents from file that does not exist', () => {
+    it('should get an empty list of documents from file that does not exist', () => {
       let file = new File(serializer, fs, 'noSuchFile.json');
 
-      return expect(file.read()).to.be.rejected;
+      return file.read().then((docs: Document[]) => {
+        expect(docs).to.be.empty;
+      });
     });
   });
 

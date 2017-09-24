@@ -34,6 +34,9 @@ export class File extends EventEmitter implements PersistenceAdapter {
       .then((data: string) => {
         return this.serializer.deserialize(data);
       })
+      .catch(() => {
+        return {};
+      })
       .then((dict: any) => {
         this.content = cloneDeep(dict);
         return dict;
