@@ -1,10 +1,14 @@
-import {provider} from '@ziggurat/tiamat';
+import {provider, decorate, injectable} from '@ziggurat/tiamat';
 import fs = require('fs');
 import * as chokidar from 'chokidar';
 import {relative, join} from 'path';
 import {EventEmitter} from 'eventemitter3';
 import {FileSystem} from './interfaces';
 import * as Promise from 'bluebird';
+
+if (Reflect.hasOwnMetadata('inversify:paramtypes', EventEmitter) === false) {
+  decorate(injectable(), EventEmitter);
+}
 
 @provider({
   for: 'isimud.FileSystem',
