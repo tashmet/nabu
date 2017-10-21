@@ -1,5 +1,5 @@
 import {provider, decorate, injectable} from '@ziggurat/tiamat';
-import fs = require('fs');
+import * as fs from 'fs-extra';
 import * as chokidar from 'chokidar';
 import {relative, join} from 'path';
 import {EventEmitter} from 'eventemitter3';
@@ -37,42 +37,16 @@ export class FileSystemService extends EventEmitter implements FileSystem {
   }
 
   public readDir(path: string): Promise<string[]> {
-    path = join(process.cwd(), 'content', path);
-    return new Promise<string[]>((resolve, reject) => {
-      fs.readdir(path, (err, files: string[]) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(files);
-        }
-      });
-    });
+    return fs.readdir(join(this.root, path));
   }
 
   public readFile(path: string): Promise<string> {
-    let file = join(process.cwd(), 'content', path);
-    return new Promise<string>((resolve, reject) => {
-      fs.readFile(file, 'utf8', (err, data: string) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(data);
-        }
-      });
-    });
+    return fs.readFile(join(this.root, path), 'utf8');
   }
 
-  public writeFile(path: string, data: string): Promise<void> {
+  public async writeFile(path: string, data: string): Promise<void> {
     let relPath = join('content', path);
-    return new Promise<void>((resolve, reject) => {
-      fs.writeFile(join(process.cwd(), relPath), data, {encoding: 'utf8'}, (err) => {
-        if (err) {
-          reject(err);
-        } else {
-          this.emit('file-stored', data, relPath);
-          resolve();
-        }
-      });
-    });
+    await fs.writeFile(join(process.cwd(), relPath), data, {encoding: 'utf8'});
+    this.emit('file-stored', data, relPath);
   }
 }
