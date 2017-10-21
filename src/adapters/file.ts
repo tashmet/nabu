@@ -17,10 +17,8 @@ export class File extends EventEmitter implements PersistenceAdapter {
     fs.on('file-changed', (filePath: string) => { this.onFileChanged(filePath); });
   }
 
-  public read(): Promise<Document[]> {
-    return this.readFile().then((dict: any) => {
-      return this.getDocuments(dict);
-    });
+  public async read(): Promise<Document[]> {
+    return this.getDocuments(await this.readFile());
   }
 
   public write(docs: Document[]): Promise<void> {
@@ -28,18 +26,15 @@ export class File extends EventEmitter implements PersistenceAdapter {
     return Promise.resolve();
   }
 
-  private readFile(): Promise<object> {
-    return this.fs.readFile(this.path)
-      .then((data: string) => {
-        return this.serializer.deserialize(data);
-      })
-      .catch(() => {
-        return {};
-      })
-      .then((dict: any) => {
-        this.content = cloneDeep(dict);
-        return dict;
-      });
+  private async readFile(): Promise<object> {
+    let dict: any;
+    try {
+      dict = await this.serializer.deserialize(await this.fs.readFile(this.path));
+    } catch (err) {
+      dict = {};
+    }
+    this.content = cloneDeep(dict);
+    return dict;
   }
 
   private getDocuments(dict: any): Document[] {
@@ -49,27 +44,24 @@ export class File extends EventEmitter implements PersistenceAdapter {
     });
   }
 
-  private onFileAdded(path: string) {
+  private async onFileAdded(path: string) {
     if (path === this.path) {
-      this.read().then((docs: Document[]) => {
-        docs.forEach(doc => {
-          this.emit('document-updated', doc);
-        });
-      });
+      for (let doc of await this.read()) {
+        this.emit('document-updated', doc);
+      }
     }
   }
 
-  private onFileChanged(path: string) {
+  private async onFileChanged(path: string) {
     if (path === this.path) {
       const old = this.content;
-      this.readFile().then(() => {
-        this.getDocuments(this.getUpdated(old)).forEach(doc => {
-          this.emit('document-updated', doc);
-        });
-        this.getRemoved(old).forEach((id: string) => {
-          this.emit('document-removed', id);
-        });
-      });
+      await this.readFile();
+      for (let doc of this.getDocuments(this.getUpdated(old))) {
+        this.emit('document-updated', doc);
+      }
+      for (let id of this.getRemoved(old)) {
+        this.emit('document-removed', id);
+      }
     }
   }
 
