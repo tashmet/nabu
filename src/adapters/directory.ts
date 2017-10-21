@@ -18,14 +18,10 @@ export class Directory extends EventEmitter implements PersistenceAdapter {
     fs.on('file-removed', (filePath: string) => { this.onFileRemoved(filePath); });
   }
 
-  public read(): Promise<Document[]> {
-    return this.fs.readDir(this.path)
-      .then((files: string[]) => {
-        const promises = map(files, file => {
-          return this.loadFile(join(this.path, file));
-        });
-        return Promise.all(promises);
-      });
+  public async read(): Promise<Document[]> {
+    return Promise.all(map(await this.fs.readDir(this.path), file => {
+      return this.loadFile(join(this.path, file));
+    }));
   }
 
   public write(docs: Document[]): Promise<void> {
@@ -40,23 +36,15 @@ export class Directory extends EventEmitter implements PersistenceAdapter {
     });
   }
 
-  private loadFile(path: string): Promise<Document> {
-    return this.fs.readFile(path)
-      .then(data => {
-        return this.serializer.deserialize(data);
-      })
-      .then(obj => {
-        const doc = <Document>obj;
-        doc._id = this.getId(path);
-        return doc;
-      });
+  private async loadFile(path: string): Promise<Document> {
+    let doc = <Document>await this.serializer.deserialize(await this.fs.readFile(path));
+    doc._id = this.getId(path);
+    return doc;
   }
 
-  private onFileUpdated(path: string) {
+  private async onFileUpdated(path: string) {
     if (basename(dirname(path)) === this.path) {
-      this.loadFile(path).then((doc: Document) => {
-        this.emit('document-updated', doc);
-      });
+      this.emit('document-updated', await this.loadFile(path));
     }
   }
 
