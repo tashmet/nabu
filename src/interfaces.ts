@@ -1,5 +1,4 @@
 import {SerializerProvider} from '@ziggurat/isimud';
-import * as Promise from 'bluebird';
 
 export interface FileSystem {
   readDir(path: string): Promise<string[]>;

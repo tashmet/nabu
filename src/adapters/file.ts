@@ -3,7 +3,6 @@ import {PersistenceAdapter} from '@ziggurat/isimud-persistence';
 import {FileSystem} from '../interfaces';
 import {EventEmitter} from 'eventemitter3';
 import {cloneDeep, difference, each, intersection, isEqual, keys, map} from 'lodash';
-import * as Promise from 'bluebird';
 
 export class File extends EventEmitter implements PersistenceAdapter {
   private content: any = {};

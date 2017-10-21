@@ -4,7 +4,6 @@ import {FileSystem} from '../interfaces';
 import {EventEmitter} from 'eventemitter3';
 import {basename, dirname, join} from 'path';
 import {map} from 'lodash';
-import * as Promise from 'bluebird';
 
 export class Directory extends EventEmitter implements PersistenceAdapter {
   public constructor(
