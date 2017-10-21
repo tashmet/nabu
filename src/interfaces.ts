@@ -12,6 +12,10 @@ export interface FileSystem {
   on(event: 'ready', fn: () => void): FileSystem;
 }
 
+export interface FileSystemConfig {
+  path: string;
+}
+
 export interface DirectoryConfig {
   /**
    * Path to directory.

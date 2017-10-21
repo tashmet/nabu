@@ -1,8 +1,10 @@
 import {Injector} from '@ziggurat/tiamat';
 import {Collection, Document, Serializer, json} from '@ziggurat/isimud';
+import {FileSystemConfig} from '../../src/interfaces';
 import {File} from '../../src/adapters/file';
 import {FileSystemService} from '../../src/service';
 import {MockContentDir} from '../mocks';
+import {join} from 'path';
 import {expect} from 'chai';
 import 'mocha';
 import * as mockfs from 'mock-fs';
@@ -12,6 +14,9 @@ import * as chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
 
 describe('File', () => {
+  const config: FileSystemConfig = {
+    path: join(process.cwd(), 'content')
+  };
   let serializer = json()(<Injector>{});
 
   after(() => {
@@ -19,7 +24,7 @@ describe('File', () => {
   });
 
   describe('read', () => {
-    let fs = new FileSystemService();
+    let fs = new FileSystemService(config);
 
     before(() => {
       let content = new MockContentDir(fs)
@@ -44,7 +49,7 @@ describe('File', () => {
   });
 
   describe('file added', () => {
-    let fs = new FileSystemService();
+    let fs = new FileSystemService(config);
     let content: MockContentDir;
 
     before(() => {
@@ -63,7 +68,7 @@ describe('File', () => {
   });
 
   describe('document changed in file', () => {
-    let fs = new FileSystemService();
+    let fs = new FileSystemService(config);
     let content: MockContentDir;
 
     before(() => {
@@ -85,7 +90,7 @@ describe('File', () => {
   });
 
   describe('document removed from file', () => {
-    let fs = new FileSystemService();
+    let fs = new FileSystemService(config);
     let content: MockContentDir;
 
     before(() => {

@@ -1,9 +1,9 @@
-import {provider, decorate, injectable} from '@ziggurat/tiamat';
+import {inject, provider, decorate, injectable} from '@ziggurat/tiamat';
 import * as fs from 'fs-extra';
 import * as chokidar from 'chokidar';
 import {relative, join} from 'path';
 import {EventEmitter} from 'eventemitter3';
-import {FileSystem} from './interfaces';
+import {FileSystem, FileSystemConfig} from './interfaces';
 
 if (Reflect.hasOwnMetadata('inversify:paramtypes', EventEmitter) === false) {
   decorate(injectable(), EventEmitter);
@@ -14,22 +14,22 @@ if (Reflect.hasOwnMetadata('inversify:paramtypes', EventEmitter) === false) {
   singleton: true
 })
 export class FileSystemService extends EventEmitter implements FileSystem {
-  private root: string = join(process.cwd(), 'content');
-
-  public constructor() {
+  public constructor(
+    @inject('isimud.FileSystemConfig') private config: FileSystemConfig
+  ) {
     super();
-    chokidar.watch(this.root, {
+    chokidar.watch(this.config.path, {
       ignoreInitial: true,
       persistent: true,
     })
       .on('add', (path: string) => {
-        this.emit('file-added', relative(this.root, path));
+        this.emit('file-added', this.relativePath(path));
       })
       .on('change', (path: string) => {
-        this.emit('file-changed', relative(this.root, path));
+        this.emit('file-changed', this.relativePath(path));
       })
       .on('unlink', (path: string) => {
-        this.emit('file-removed', relative(this.root, path));
+        this.emit('file-removed', this.relativePath(path));
       })
       .on('ready', () => {
         this.emit('ready');
@@ -37,16 +37,23 @@ export class FileSystemService extends EventEmitter implements FileSystem {
   }
 
   public readDir(path: string): Promise<string[]> {
-    return fs.readdir(join(this.root, path));
+    return fs.readdir(this.absolutePath(path));
   }
 
   public readFile(path: string): Promise<string> {
-    return fs.readFile(join(this.root, path), 'utf8');
+    return fs.readFile(this.absolutePath(path), 'utf8');
   }
 
   public async writeFile(path: string, data: string): Promise<void> {
-    let relPath = join('content', path);
-    await fs.writeFile(join(process.cwd(), relPath), data, {encoding: 'utf8'});
-    this.emit('file-stored', data, relPath);
+    await fs.writeFile(this.absolutePath(path), data, {encoding: 'utf8'});
+    this.emit('file-stored', data, path);
+  }
+
+  private relativePath(path: string): string {
+    return relative(this.config.path, path);
+  }
+
+  private absolutePath(path: string): string {
+    return join(this.config.path, path);
   }
 }

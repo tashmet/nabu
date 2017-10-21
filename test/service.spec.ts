@@ -1,4 +1,5 @@
 import {FileSystemService} from '../src/service';
+import {join} from 'path';
 import {expect} from 'chai';
 import 'mocha';
 import * as mockfs from 'mock-fs';
@@ -8,7 +9,7 @@ import * as chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
 
 describe('FileSystemService', () => {
-  let fs = new FileSystemService();
+  let fs = new FileSystemService({path: join(process.cwd(), 'content')});
 
   before(() => {
     mockfs({
