@@ -26,24 +26,20 @@ describe('File', () => {
         .writeFile('collection.json', '{"doc1": {"foo": "bar"}, "doc2": {"foo": "bar"}}');
     });
 
-    it('should read documents from file system', () => {
-      let file = new File(serializer, fs, 'collection.json');
+    it('should read documents from file system', async () => {
+      let docs = await new File(serializer, fs, 'collection.json').read();
 
-      return file.read().then((docs: Document[]) => {
-        expect(docs).to.have.lengthOf(2);
-        expect(docs).to.have.deep.members([
-          {_id: 'doc1', foo: 'bar'},
-          {_id: 'doc2', foo: 'bar'}
-        ]);
-      });
+      expect(docs).to.have.lengthOf(2);
+      expect(docs).to.have.deep.members([
+        {_id: 'doc1', foo: 'bar'},
+        {_id: 'doc2', foo: 'bar'}
+      ]);
     });
 
-    it('should get an empty list of documents from file that does not exist', () => {
-      let file = new File(serializer, fs, 'noSuchFile.json');
+    it('should get an empty list of documents from file that does not exist', async () => {
+      let docs = await new File(serializer, fs, 'noSuchFile.json').read();
 
-      return file.read().then((docs: Document[]) => {
-        expect(docs).to.be.empty;
-      });
+      expect(docs).to.be.empty;
     });
   });
 

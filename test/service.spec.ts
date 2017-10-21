@@ -27,10 +27,8 @@ describe('FileSystemService', () => {
   });
 
   describe('readFile', () => {
-    it('should read a file', () => {
-      return fs.readFile('file1').then(data => {
-        expect(data).to.eql('file1 contents');
-      });
+    it('should read a file', async () => {
+      expect(await fs.readFile('file1')).to.eql('file1 contents');
     });
 
     it('should read fail to read a file that does not exist', () => {
@@ -39,10 +37,8 @@ describe('FileSystemService', () => {
   });
 
   describe('readDir', () => {
-    it('should read a directory', () => {
-      return fs.readDir('subdir').then(files => {
-        expect(files).to.eql(['file2', 'file3']);
-      });
+    it('should read a directory', async () => {
+      expect(await fs.readDir('subdir')).to.eql(['file2', 'file3']);
     });
 
     it('should fail to read a directory that does not exist', () => {
@@ -55,12 +51,9 @@ describe('FileSystemService', () => {
   });
 
   describe('writeFile', () => {
-    it('should write to a file', () => {
-      return fs.writeFile('file1', 'new contents').then(() => {
-        return fs.readFile('file1').then(data => {
-          expect(data).to.eql('new contents');
-        });
-      });
+    it('should write to a file', async () => {
+      await fs.writeFile('file1', 'new contents');
+      expect(await fs.readFile('file1')).to.eql('new contents');
     });
   });
 });

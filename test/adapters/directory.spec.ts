@@ -27,16 +27,14 @@ describe('Directory', () => {
         .writeFile('doc2.json', '{"foo": "bar"}');
     });
 
-    it('should read documents from file system', () => {
-      let dir = new Directory(serializer, fs, 'testdir', 'json');
+    it('should read documents from file system', async () => {
+      let docs = await new Directory(serializer, fs, 'testdir', 'json').read();
 
-      return dir.read().then((docs: Document[]) => {
-        expect(docs).to.have.lengthOf(2);
-        expect(docs).to.have.deep.members([
-          {_id: 'doc1', foo: 'bar'},
-          {_id: 'doc2', foo: 'bar'}
-        ]);
-      });
+      expect(docs).to.have.lengthOf(2);
+      expect(docs).to.have.deep.members([
+        {_id: 'doc1', foo: 'bar'},
+        {_id: 'doc2', foo: 'bar'}
+      ]);
     });
 
     it('should fail to read documents from directory that does not exist', () => {
