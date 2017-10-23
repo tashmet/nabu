@@ -1,6 +1,6 @@
 {
   "name": "@ziggurat/isimud-fs",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Isimud file system persistence",
   "scripts": {
     "test": "mocha --opts mocha.opts"
@@ -28,6 +28,8 @@
     "@types/mocha": "^2.2.41",
     "@types/mock-fs": "^3.6.30",
     "@types/node": "8.0.14",
+    "@types/sinon": "^2.3.6",
+    "@types/sinon-chai": "^2.7.29",
     "@ziggurat/isimud": "^0.24.23",
     "@ziggurat/tiamat": "^0.5.3",
     "chai": "^4.0.2",
@@ -39,6 +41,8 @@
     "mocha": "^3.4.2",
     "mock-fs": "^4.4.1",
     "run-sequence": "^2.0.0",
+    "sinon": "^4.0.1",
+    "sinon-chai": "^2.14.0",
     "ts-node": "^3.0.6",
     "tslint": "^5.4.0",
     "typescript": "^2.5.0"
