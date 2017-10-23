@@ -1,39 +1,40 @@
 import {Injector} from '@ziggurat/tiamat';
 import {Collection, Document, Serializer, json} from '@ziggurat/isimud';
-import {FileSystemConfig} from '../../src/interfaces';
 import {Directory} from '../../src/adapters/directory';
 import {FileSystemService} from '../../src/service';
-import {MockContentDir} from '../mocks';
 import {join} from 'path';
 import {expect} from 'chai';
 import 'mocha';
 import * as mockfs from 'mock-fs';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import * as sinon from 'sinon';
+import * as sinonChai from 'sinon-chai';
 
 chai.use(chaiAsPromised);
+chai.use(sinonChai);
 
 describe('Directory', () => {
-  const config: FileSystemConfig = {
-    path: join(process.cwd(), 'content')
-  };
-  let serializer = json()(<Injector>{});
+  const fs = new FileSystemService({
+    path: 'path/to/content'
+  });
+  const serializer = json()(<Injector>{});
+  const readDir = sinon.stub(fs, 'readDir');
+  const readFile = sinon.stub(fs, 'readFile');
+  const dir = new Directory(serializer, fs, 'testdir', 'json');
 
   after(() => {
-    mockfs.restore();
+    readDir.restore();
+    readFile.restore();
   });
 
   describe('read', () => {
-    let fs = new FileSystemService(config);
-
-    before(() => {
-      let content = new MockContentDir(fs, 'testdir')
-        .writeFile('doc1.json', '{"foo": "bar"}')
-        .writeFile('doc2.json', '{"foo": "bar"}');
-    });
-
     it('should read documents from file system', async () => {
-      let docs = await new Directory(serializer, fs, 'testdir', 'json').read();
+      readDir.withArgs('testdir').returns(Promise.resolve(['doc1.json', 'doc2.json']));
+      readFile.withArgs(join('testdir', 'doc1.json')).returns(Promise.resolve('{"foo": "bar"}'));
+      readFile.withArgs(join('testdir', 'doc2.json')).returns(Promise.resolve('{"foo": "bar"}'));
+
+      let docs = await dir.read();
 
       expect(docs).to.have.lengthOf(2);
       expect(docs).to.have.deep.members([
@@ -43,68 +44,52 @@ describe('Directory', () => {
     });
 
     it('should fail to read documents from directory that does not exist', () => {
-      let dir = new Directory(serializer, fs, 'noSuchDir', 'json');
+      readDir.withArgs('testdir').returns(Promise.reject('No such directory'));
 
-      return expect(dir.read()).to.be.rejected;
+      return expect(dir.read()).to.eventually.be.rejected;
     });
   });
 
-  describe('file added in directory', () => {
-    let fs = new FileSystemService(config);
-    let content: MockContentDir;
-
+  describe('events', () => {
     before(() => {
-      content = new MockContentDir(fs, 'testdir');
+      readFile.withArgs(join('testdir', 'doc1.json')).returns(Promise.resolve('{}'));
     });
 
-    it('should trigger document-updated event', (done) => {
-      new Directory(serializer, fs, 'testdir', 'json')
-        .on('document-updated', (doc: Document) => {
+    afterEach(() => {
+      dir.removeAllListeners();
+    });
+
+    describe('file added in directory', () => {
+      it('should trigger document-updated event', (done) => {
+        dir.on('document-updated', (doc: Document) => {
           expect(doc).to.eql({_id: 'doc1'});
           done();
         });
 
-      content.writeFile('doc1.json', '{}');
-    });
-  });
-
-  describe('file updated in directory', () => {
-    let fs = new FileSystemService(config);
-    let content: MockContentDir;
-
-    before(() => {
-      content = new MockContentDir(fs, 'testdir')
-        .writeFile('doc1.json', '{}')
+        fs.emit('file-added', join('testdir', 'doc1.json'));
+      });
     });
 
-    it('should trigger document-updated event', (done) => {
-      new Directory(serializer, fs, 'testdir', 'json')
-        .on('document-updated', (doc: Document) => {
-          expect(doc).to.eql({_id: 'doc1', foo: 'new content'});
+    describe('file updated in directory', () => {
+      it('should trigger document-updated event', (done) => {
+        dir.on('document-updated', (doc: Document) => {
+          expect(doc).to.eql({_id: 'doc1'});
           done();
         });
 
-      content.writeFile('doc1.json', '{"foo": "new content"}');
-    });
-  });
-
-  describe('file removed in diretory', () => {
-    let fs = new FileSystemService(config);
-    let content: MockContentDir;
-
-    before(() => {
-      content = new MockContentDir(fs, 'testdir')
-        .writeFile('doc1.json', '{}')
+        fs.emit('file-changed', join('testdir', 'doc1.json'));
+      });
     });
 
-    it('should trigger document-removed event', (done) => {
-      new Directory(serializer, fs, 'testdir', 'json')
-        .on('document-removed', (id: string) => {
+    describe('file removed in diretory', () => {
+      it('should trigger document-removed event', (done) => {
+        dir.on('document-removed', (id: string) => {
           expect(id).to.eql('doc1');
           done();
         });
 
-      content.removeFile('doc1.json');
+        fs.emit('file-removed', join('testdir', 'doc1.json'));
+      });
     });
   });
 });
