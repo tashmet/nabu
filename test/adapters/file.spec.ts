@@ -1,34 +1,32 @@
 import {Injector} from '@ziggurat/tiamat';
 import {Collection, Document, Serializer, json} from '@ziggurat/isimud';
-import {FileSystemConfig} from '../../src/interfaces';
 import {File} from '../../src/adapters/file';
 import {FileSystemService} from '../../src/service';
-import {MockContentDir} from '../mocks';
-import {join} from 'path';
 import {expect} from 'chai';
 import 'mocha';
-import * as mockfs from 'mock-fs';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import * as sinon from 'sinon';
+import * as sinonChai from 'sinon-chai';
 
 chai.use(chaiAsPromised);
+chai.use(sinonChai);
 
 describe('File', () => {
-  const config: FileSystemConfig = {
-    path: join(process.cwd(), 'content')
-  };
-  let serializer = json()(<Injector>{});
+  const fs = new FileSystemService({
+    path: 'path/to/content'
+  });
+  const serializer = json()(<Injector>{});
+  const readFile = sinon.stub(fs, 'readFile');
 
   after(() => {
-    mockfs.restore();
+    readFile.restore();
   });
 
   describe('read', () => {
-    let fs = new FileSystemService(config);
-
     before(() => {
-      let content = new MockContentDir(fs)
-        .writeFile('collection.json', '{"doc1": {"foo": "bar"}, "doc2": {"foo": "bar"}}');
+      readFile.withArgs('collection.json').returns(
+        Promise.resolve('{"doc1": {"foo": "bar"}, "doc2": {"foo": "bar"}}'));
     });
 
     it('should read documents from file system', async () => {
@@ -49,11 +47,9 @@ describe('File', () => {
   });
 
   describe('file added', () => {
-    let fs = new FileSystemService(config);
-    let content: MockContentDir;
-
     before(() => {
-      content = new MockContentDir(fs);
+      readFile.withArgs('collection.json').returns(
+        Promise.resolve('{"doc1": {}}'));
     });
 
     it('should trigger document-updated event', (done) => {
@@ -63,17 +59,14 @@ describe('File', () => {
           done();
         });
 
-      content.writeFile('collection.json', '{"doc1": {}}');
+      fs.emit('file-added', 'collection.json');
     });
   });
 
   describe('document changed in file', () => {
-    let fs = new FileSystemService(config);
-    let content: MockContentDir;
-
     before(() => {
-      content = new MockContentDir(fs)
-        .writeFile('collection.json', '{"doc1": {}, "doc2": {}}');
+      readFile.withArgs('collection.json').returns(
+        Promise.resolve('{"doc1": {}, "doc2": {}}'));
     });
 
     it('should trigger document-updated event', (done) => {
@@ -84,18 +77,17 @@ describe('File', () => {
           done();
         });
 
-        content.writeFile('collection.json', '{"doc1": {}, "doc2": {"foo": "new content"}}');
+        readFile.withArgs('collection.json').returns(
+          Promise.resolve('{"doc1": {}, "doc2": {"foo": "new content"}}'));
+        fs.emit('file-changed', 'collection.json');
       });
     });
   });
 
   describe('document removed from file', () => {
-    let fs = new FileSystemService(config);
-    let content: MockContentDir;
-
     before(() => {
-      content = new MockContentDir(fs)
-        .writeFile('collection.json', '{"doc1": {}, "doc2": {}}');
+      readFile.withArgs('collection.json').returns(
+        Promise.resolve('{"doc1": {}, "doc2": {}}'));
     });
 
     it('should trigger document-removed event', (done) => {
@@ -106,7 +98,9 @@ describe('File', () => {
           done();
         });
 
-        content.writeFile('collection.json', '{"doc1": {}}');
+        readFile.withArgs('collection.json').returns(
+          Promise.resolve('{"doc1": {}}'));
+        fs.emit('file-changed', 'collection.json');
       });
     });
   });
