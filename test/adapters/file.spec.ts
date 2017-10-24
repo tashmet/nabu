@@ -19,6 +19,7 @@ describe('File', () => {
   });
   const serializer = json()(<Injector>{});
   const readFile = sinon.stub(fs, 'readFile');
+  const file = new File(serializer, fs, 'collection.json');
 
   after(() => {
     readFile.restore();
@@ -46,38 +47,38 @@ describe('File', () => {
     });
   });
 
-  describe('file added', () => {
-    before(() => {
-      readFile.withArgs('collection.json').returns(
-        Promise.resolve('{"doc1": {"foo": "bar"}}'));
+  describe('events', () => {
+    afterEach(() => {
+      file.removeAllListeners();
     });
 
-    it('should trigger document-updated event', (done) => {
-      let file = new File(serializer, fs, 'collection.json')
-      file.on('document-updated', (id: string, data: Object) => {
-        expect(id).to.eql('doc1');
-        expect(data).to.eql({foo: 'bar'});
-        file.removeAllListeners();
-        done();
+    describe('file added', () => {
+      before(() => {
+        readFile.withArgs('collection.json').returns(
+          Promise.resolve('{"doc1": {"foo": "bar"}}'));
       });
 
-      fs.emit('file-added', 'collection.json');
-    });
-  });
+      it('should trigger document-updated event', (done) => {
+        file.on('document-updated', (id: string, data: Object) => {
+          expect(id).to.eql('doc1');
+          expect(data).to.eql({foo: 'bar'});
+          done();
+        });
 
-  describe('document changed in file', () => {
-    before(() => {
-      readFile.withArgs('collection.json').returns(
-        Promise.resolve('{"doc1": {}, "doc2": {}}'));
+        fs.emit('file-added', 'collection.json');
+      });
     });
 
-    it('should trigger document-updated event', (done) => {
-      let file = new File(serializer, fs, 'collection.json');
-      file.read().then((data: ObjectMap) => {
+    describe('file changed', () => {
+      before(async () => {
+        readFile.withArgs('collection.json').returns(Promise.resolve('{"doc1": {}, "doc2": {}}'));
+        await file.read();
+      });
+
+      it('should trigger document-updated event when a document has changed', (done) => {
         file.on('document-updated', (id: string, data: Object) => {
           expect(id).to.eql('doc2');
           expect(data).to.eql({foo: 'new content'});
-          file.removeAllListeners();
           done();
         });
 
@@ -85,26 +86,14 @@ describe('File', () => {
           Promise.resolve('{"doc1": {}, "doc2": {"foo": "new content"}}'));
         fs.emit('file-changed', 'collection.json');
       });
-    });
-  });
 
-  describe('document removed from file', () => {
-    before(() => {
-      readFile.withArgs('collection.json').returns(
-        Promise.resolve('{"doc1": {}, "doc2": {}}'));
-    });
-
-    it('should trigger document-removed event', (done) => {
-      let file = new File(serializer, fs, 'collection.json');
-      file.read().then((data: ObjectMap) => {
+      it('should trigger document-removed event when a document has been removed', (done) => {
         file.on('document-removed', (id: string) => {
           expect(id).to.eql('doc2');
-          file.removeAllListeners();
           done();
         });
 
-        readFile.withArgs('collection.json').returns(
-          Promise.resolve('{"doc1": {}}'));
+        readFile.withArgs('collection.json').returns(Promise.resolve('{"doc1": {}}'));
         fs.emit('file-changed', 'collection.json');
       });
     });
