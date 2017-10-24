@@ -36,11 +36,10 @@ describe('Directory', () => {
 
       let docs = await dir.read();
 
-      expect(docs).to.have.lengthOf(2);
-      expect(docs).to.have.deep.members([
-        {_id: 'doc1', foo: 'bar'},
-        {_id: 'doc2', foo: 'bar'}
-      ]);
+      expect(docs).to.eql({
+        doc1: {foo: 'bar'},
+        doc2: {foo: 'bar'}
+      });
     });
 
     it('should fail to read documents from directory that does not exist', () => {
@@ -52,7 +51,7 @@ describe('Directory', () => {
 
   describe('events', () => {
     before(() => {
-      readFile.withArgs(join('testdir', 'doc1.json')).returns(Promise.resolve('{}'));
+      readFile.withArgs(join('testdir', 'doc1.json')).returns(Promise.resolve('{"foo": "bar"}'));
     });
 
     afterEach(() => {
@@ -61,8 +60,9 @@ describe('Directory', () => {
 
     describe('file added in directory', () => {
       it('should trigger document-updated event', (done) => {
-        dir.on('document-updated', (doc: Document) => {
-          expect(doc).to.eql({_id: 'doc1'});
+        dir.on('document-updated', (id: string, data: Object) => {
+          expect(id).to.eql('doc1');
+          expect(data).to.eql({foo: 'bar'});
           done();
         });
 
@@ -72,8 +72,9 @@ describe('Directory', () => {
 
     describe('file updated in directory', () => {
       it('should trigger document-updated event', (done) => {
-        dir.on('document-updated', (doc: Document) => {
-          expect(doc).to.eql({_id: 'doc1'});
+        dir.on('document-updated', (id: string, data: Object) => {
+          expect(id).to.eql('doc1');
+          expect(data).to.eql({foo: 'bar'});
           done();
         });
 

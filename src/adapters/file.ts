@@ -1,13 +1,11 @@
 import {Document, Serializer} from '@ziggurat/isimud';
-import {PersistenceAdapter} from '@ziggurat/isimud-persistence';
+import {PersistenceAdapter, ObjectMap} from '@ziggurat/isimud-persistence';
 import {FileSystem} from '../interfaces';
 import {EventEmitter} from 'eventemitter3';
 import {cloneDeep, difference, each, intersection, isEqual, keys, map, merge, transform} from 'lodash';
 
-type DocumentMap = {[id: string]: any};
-
 export class File extends EventEmitter implements PersistenceAdapter {
-  private buffer: DocumentMap = {};
+  private buffer: ObjectMap = {};
 
   public constructor(
     private serializer: Serializer,
@@ -19,21 +17,18 @@ export class File extends EventEmitter implements PersistenceAdapter {
     fs.on('file-changed', (filePath: string) => { this.onFileChanged(filePath); });
   }
 
-  public async read(): Promise<Document[]> {
-    return map(await this.readFile(), (doc: any, id: string) => {
-      doc._id = id;
-      return doc;
-    });
+  public async read(): Promise<ObjectMap> {
+    return this.readFile();
   }
 
-  public write(docs: Document[]): Promise<void> {
+  public write(id: string, data: Object): Promise<void> {
     // TODO: Implement
     return Promise.resolve();
   }
 
-  private async readFile(): Promise<DocumentMap> {
+  private async readFile(): Promise<ObjectMap> {
     try {
-      return this.set(await this.serializer.deserialize(await this.fs.readFile(this.path)));
+      return this.set(<ObjectMap>await this.serializer.deserialize(await this.fs.readFile(this.path)));
     } catch (err) {
       return this.set({});
     }
@@ -41,9 +36,9 @@ export class File extends EventEmitter implements PersistenceAdapter {
 
   private async onFileAdded(path: string) {
     if (path === this.path) {
-      for (let doc of await this.read()) {
-        this.emit('document-updated', doc);
-      }
+      each(await this.read(), (doc, id) => {
+        this.emit('document-updated', id, doc);
+      });
     }
   }
 
@@ -51,29 +46,29 @@ export class File extends EventEmitter implements PersistenceAdapter {
     if (path === this.path) {
       const old = this.buffer;
       await this.readFile();
-      for (let doc of this.updated(old)) {
-        this.emit('document-updated', doc);
-      }
+      each(this.updated(old), (doc, id) => {
+        this.emit('document-updated', id, doc);
+      });
       for (let id of this.removed(old)) {
         this.emit('document-removed', id);
       }
     }
   }
 
-  private updated(other: DocumentMap): Document[] {
-    return transform(intersection(keys(this.buffer), keys(other)), (result: Document[], id: string) => {
+  private updated(other: ObjectMap): ObjectMap {
+    return transform(intersection(keys(this.buffer), keys(other)), (result: ObjectMap, id: string) => {
       if (!isEqual(this.buffer[id], other[id])) {
-        result.push(merge({}, {_id: id}, this.buffer[id]));
+        result[id] = this.buffer[id];
       }
       return result;
-    }, []);
+    }, {});
   }
 
-  private removed(other: DocumentMap): string[] {
+  private removed(other: ObjectMap): string[] {
     return difference(keys(other), keys(this.buffer));
   }
 
-  private set(obj: DocumentMap): DocumentMap {
+  private set(obj: ObjectMap): ObjectMap {
     this.buffer = cloneDeep(obj);
     return obj;
   }

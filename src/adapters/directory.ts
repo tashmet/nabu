@@ -1,5 +1,5 @@
 import {Document, Serializer} from '@ziggurat/isimud';
-import {PersistenceAdapter} from '@ziggurat/isimud-persistence';
+import {PersistenceAdapter, ObjectMap} from '@ziggurat/isimud-persistence';
 import {FileSystem} from '../interfaces';
 import {EventEmitter} from 'eventemitter3';
 import {basename, dirname, join} from 'path';
@@ -18,13 +18,17 @@ export class Directory extends EventEmitter implements PersistenceAdapter {
     fs.on('file-removed', (filePath: string) => { this.onFileRemoved(filePath); });
   }
 
-  public async read(): Promise<Document[]> {
-    return Promise.all(map(await this.fs.readDir(this.path), file => {
-      return this.loadFile(join(this.path, file));
-    }));
+  public async read(): Promise<ObjectMap> {
+    let result: ObjectMap = {};
+    for (let file of await this.fs.readDir(this.path)) {
+      result[this.getId(file)] = await this.loadFile(join(this.path, file));
+    }
+    return result;
   }
 
-  public write(docs: Document[]): Promise<void> {
+  public write(id: string, data: Object): Promise<void> {
+    return Promise.resolve();
+    /*
     const promises = map(docs, (doc) => {
       return this.serializer.serialize(doc).then(data => {
         const path = join(this.path, `${doc._id}.${this.extension}`);
@@ -34,17 +38,16 @@ export class Directory extends EventEmitter implements PersistenceAdapter {
     return Promise.all(promises).then(() => {
       return Promise.resolve();
     });
+    */
   }
 
-  private async loadFile(path: string): Promise<Document> {
-    let doc = <Document>await this.serializer.deserialize(await this.fs.readFile(path));
-    doc._id = this.getId(path);
-    return doc;
+  private async loadFile(path: string): Promise<Object> {
+    return this.serializer.deserialize(await this.fs.readFile(path));
   }
 
   private async onFileUpdated(path: string) {
     if (basename(dirname(path)) === this.path) {
-      this.emit('document-updated', await this.loadFile(path));
+      this.emit('document-updated', this.getId(path), await this.loadFile(path));
     }
   }
 

@@ -1,5 +1,6 @@
 import {Injector} from '@ziggurat/tiamat';
 import {Collection, Document, Serializer, json} from '@ziggurat/isimud';
+import {ObjectMap} from '@ziggurat/isimud-persistence';
 import {File} from '../../src/adapters/file';
 import {FileSystemService} from '../../src/service';
 import {expect} from 'chai';
@@ -32,11 +33,10 @@ describe('File', () => {
     it('should read documents from file system', async () => {
       let docs = await new File(serializer, fs, 'collection.json').read();
 
-      expect(docs).to.have.lengthOf(2);
-      expect(docs).to.have.deep.members([
-        {_id: 'doc1', foo: 'bar'},
-        {_id: 'doc2', foo: 'bar'}
-      ]);
+      expect(docs).to.eql({
+        doc1: {foo: 'bar'},
+        doc2: {foo: 'bar'}
+      });
     });
 
     it('should get an empty list of documents from file that does not exist', async () => {
@@ -49,15 +49,17 @@ describe('File', () => {
   describe('file added', () => {
     before(() => {
       readFile.withArgs('collection.json').returns(
-        Promise.resolve('{"doc1": {}}'));
+        Promise.resolve('{"doc1": {"foo": "bar"}}'));
     });
 
     it('should trigger document-updated event', (done) => {
-      new File(serializer, fs, 'collection.json')
-        .on('document-updated', (doc: Document) => {
-          expect(doc).to.eql({_id: 'doc1'});
-          done();
-        });
+      let file = new File(serializer, fs, 'collection.json')
+      file.on('document-updated', (id: string, data: Object) => {
+        expect(id).to.eql('doc1');
+        expect(data).to.eql({foo: 'bar'});
+        file.removeAllListeners();
+        done();
+      });
 
       fs.emit('file-added', 'collection.json');
     });
@@ -71,9 +73,11 @@ describe('File', () => {
 
     it('should trigger document-updated event', (done) => {
       let file = new File(serializer, fs, 'collection.json');
-      file.read().then((docs: Document[]) => {
-        file.on('document-updated', (doc: Document) => {
-          expect(doc).to.eql({_id: 'doc2', foo: 'new content'});
+      file.read().then((data: ObjectMap) => {
+        file.on('document-updated', (id: string, data: Object) => {
+          expect(id).to.eql('doc2');
+          expect(data).to.eql({foo: 'new content'});
+          file.removeAllListeners();
           done();
         });
 
@@ -92,9 +96,10 @@ describe('File', () => {
 
     it('should trigger document-removed event', (done) => {
       let file = new File(serializer, fs, 'collection.json');
-      file.read().then((docs: Document[]) => {
+      file.read().then((data: ObjectMap) => {
         file.on('document-removed', (id: string) => {
           expect(id).to.eql('doc2');
+          file.removeAllListeners();
           done();
         });
 
