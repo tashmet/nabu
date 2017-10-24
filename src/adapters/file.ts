@@ -18,20 +18,16 @@ export class File extends EventEmitter implements PersistenceAdapter {
   }
 
   public async read(): Promise<ObjectMap> {
-    return this.readFile();
-  }
-
-  public write(id: string, data: Object): Promise<void> {
-    // TODO: Implement
-    return Promise.resolve();
-  }
-
-  private async readFile(): Promise<ObjectMap> {
     try {
       return this.set(<ObjectMap>await this.serializer.deserialize(await this.fs.readFile(this.path)));
     } catch (err) {
       return this.set({});
     }
+  }
+
+  public write(id: string, data: Object): Promise<void> {
+    // TODO: Implement
+    return Promise.resolve();
   }
 
   private async onFileAdded(path: string) {
@@ -45,7 +41,7 @@ export class File extends EventEmitter implements PersistenceAdapter {
   private async onFileChanged(path: string) {
     if (path === this.path) {
       const old = this.buffer;
-      await this.readFile();
+      await this.read();
       each(this.updated(old), (doc, id) => {
         this.emit('document-updated', id, doc);
       });
