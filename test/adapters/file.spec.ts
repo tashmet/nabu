@@ -19,6 +19,7 @@ describe('File', () => {
   });
   const serializer = json()(<Injector>{});
   const readFile = sinon.stub(fs, 'readFile');
+  const writeFile = sinon.stub(fs, 'writeFile');
   const file = new File(serializer, fs, 'collection.json');
 
   after(() => {
@@ -44,6 +45,14 @@ describe('File', () => {
       let docs = await new File(serializer, fs, 'noSuchFile.json').read();
 
       expect(docs).to.be.empty;
+    });
+  });
+
+  describe('write', () => {
+    it('should write a new collection to file', async () => {
+      await new File(serializer, fs, 'collection.json').write('doc1', {});
+
+      expect(writeFile).to.have.been.calledWith('collection.json', '{"doc1":{}}');
     });
   });
 
