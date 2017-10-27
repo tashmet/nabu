@@ -21,6 +21,7 @@ describe('Directory', () => {
   const serializer = json()(<Injector>{});
   const readDir = sinon.stub(fs, 'readDir');
   const readFile = sinon.stub(fs, 'readFile');
+  const writeFile = sinon.stub(fs, 'writeFile');
   const dir = new Directory(serializer, fs, 'testdir', 'json');
 
   after(() => {
@@ -46,6 +47,14 @@ describe('Directory', () => {
       readDir.withArgs('testdir').returns(Promise.reject('No such directory'));
 
       return expect(dir.read()).to.eventually.be.rejected;
+    });
+  });
+
+  describe('write', () => {
+    it('should write a new collection to file', async () => {
+      await new Directory(serializer, fs, 'testdir', 'json').write('doc1', {});
+
+      expect(writeFile).to.have.been.calledWith(join('testdir', 'doc1.json'), '{}');
     });
   });
 

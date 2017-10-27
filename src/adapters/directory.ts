@@ -26,19 +26,9 @@ export class Directory extends EventEmitter implements PersistenceAdapter {
     return result;
   }
 
-  public write(id: string, data: Object): Promise<void> {
-    return Promise.resolve();
-    /*
-    const promises = map(docs, (doc) => {
-      return this.serializer.serialize(doc).then(data => {
-        const path = join(this.path, `${doc._id}.${this.extension}`);
-        return this.fs.writeFile(path, data);
-      });
-    });
-    return Promise.all(promises).then(() => {
-      return Promise.resolve();
-    });
-    */
+  public async write(id: string, data: Object): Promise<void> {
+    const path = join(this.path, `${id}.${this.extension}`);
+    await this.fs.writeFile(path, await this.serializer.serialize(data));
   }
 
   private async loadFile(path: string): Promise<Object> {
