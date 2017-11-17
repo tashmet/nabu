@@ -10,8 +10,7 @@ if (Reflect.hasOwnMetadata('inversify:paramtypes', EventEmitter) === false) {
 }
 
 @provider({
-  for: 'isimud.FileSystem',
-  singleton: true
+  key: 'isimud.FileSystem'
 })
 export class FileSystemService extends EventEmitter implements FileSystem {
   public constructor(

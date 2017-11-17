@@ -5,8 +5,7 @@ import * as chalk from 'chalk';
 let log = require('fancy-log');
 
 @provider({
-  for: 'isimud.FileSystemReporter',
-  singleton: true
+  key: 'isimud.FileSystemReporter'
 })
 export class FileSystemReporter {
   public constructor(
