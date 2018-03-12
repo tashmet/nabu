@@ -1,5 +1,5 @@
 import {provider, inject} from '@ziggurat/tiamat';
-import {FileSystem} from './interfaces';
+import {FSWatcher} from 'chokidar';
 import * as chalk from 'chalk';
 
 let log = require('fancy-log');
@@ -9,10 +9,11 @@ let log = require('fancy-log');
 })
 export class FileSystemReporter {
   public constructor(
-    @inject('isimud.FileSystem') fileSys: FileSystem
+    @inject('isimud.FSWatcher') watcher: FSWatcher
   ) {
-    fileSys.on('file-stored', (data: any, path: string) => {
-      log(chalk.cyan('STR ') + path);
-    });
+    watcher
+      .on('add',    path => log(chalk.cyan('ADD ') + path))
+      .on('change', path => log(chalk.cyan('CHG ') + path))
+      .on('unlink', path => log(chalk.cyan('REM ') + path));
   }
 }

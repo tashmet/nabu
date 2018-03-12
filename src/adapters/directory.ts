@@ -1,26 +1,28 @@
-import {Document, Serializer} from '@ziggurat/isimud';
+import {Serializer} from '@ziggurat/isimud';
 import {PersistenceAdapter, ObjectMap} from '@ziggurat/isimud-persistence';
-import {FileSystem} from '../interfaces';
 import {EventEmitter} from 'eventemitter3';
 import {basename, dirname, join} from 'path';
-import {map} from 'lodash';
+import * as fs from 'fs-extra';
+import {FSWatcher} from 'chokidar';
 
 export class Directory extends EventEmitter implements PersistenceAdapter {
   public constructor(
     private serializer: Serializer,
-    private fs: FileSystem,
+    private watcher: FSWatcher,
     private path: string,
     private extension: string
   ) {
     super();
-    fs.on('file-added',   (filePath: string) => { this.onFileUpdated(filePath); });
-    fs.on('file-changed', (filePath: string) => { this.onFileUpdated(filePath); });
-    fs.on('file-removed', (filePath: string) => { this.onFileRemoved(filePath); });
+    watcher
+      .on('add',    filePath => this.onFileUpdated(filePath))
+      .on('change', filePath => this.onFileUpdated(filePath))
+      .on('unlink', filePath => this.onFileRemoved(filePath))
+      .add(path);
   }
 
   public async read(): Promise<ObjectMap> {
     let result: ObjectMap = {};
-    for (let file of await this.fs.readDir(this.path)) {
+    for (let file of await fs.readdir(this.path)) {
       result[this.getId(file)] = await this.loadFile(join(this.path, file));
     }
     return result;
@@ -28,25 +30,25 @@ export class Directory extends EventEmitter implements PersistenceAdapter {
 
   public async write(id: string, data: Object): Promise<void> {
     const path = join(this.path, `${id}.${this.extension}`);
-    await this.fs.writeFile(path, await this.serializer.serialize(data));
+    await fs.writeFile(path, await this.serializer.serialize(data));
   }
 
   public async remove(id: string): Promise<void> {
-    return this.fs.remove(join(this.path, `${id}.${this.extension}`));
+    return fs.remove(join(this.path, `${id}.${this.extension}`));
   }
 
   private async loadFile(path: string): Promise<Object> {
-    return this.serializer.deserialize(await this.fs.readFile(path));
+    return this.serializer.deserialize(await fs.readFile(path, 'utf-8'));
   }
 
   private async onFileUpdated(path: string) {
-    if (basename(dirname(path)) === this.path) {
+    if (dirname(path) === this.path) {
       this.emit('document-updated', this.getId(path), await this.loadFile(path));
     }
   }
 
   private onFileRemoved(path: string) {
-    if (basename(dirname(path)) === this.path) {
+    if (dirname(path) === this.path) {
       this.emit('document-removed', this.getId(path));
     }
   }

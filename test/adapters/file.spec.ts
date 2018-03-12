@@ -1,39 +1,37 @@
 import {Injector} from '@ziggurat/tiamat';
-import {Collection, Document, Serializer, json} from '@ziggurat/isimud';
-import {ObjectMap} from '@ziggurat/isimud-persistence';
+import {json} from '@ziggurat/isimud';
 import {File} from '../../src/adapters/file';
-import {FileSystemService} from '../../src/service';
 import {expect} from 'chai';
 import 'mocha';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as sinon from 'sinon';
 import * as sinonChai from 'sinon-chai';
+import * as mockfs from 'mock-fs';
+import * as fs from 'fs-extra';
+import * as chokidar from 'chokidar';
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
 describe('File', () => {
-  const fs = new FileSystemService({
-    path: 'path/to/content'
-  });
   const serializer = json()(<Injector>{});
-  const readFile = sinon.stub(fs, 'readFile');
-  const writeFile = sinon.stub(fs, 'writeFile');
-  const file = new File(serializer, fs, 'collection.json');
+  const watcher = chokidar.watch([], {});
+  const file = new File(serializer, watcher, 'collection.json');
+
+  before(() => {
+    mockfs({
+      'collection.json': '{"doc1": {"foo": "bar"}, "doc2": {"foo": "bar"}}'
+    });
+  });
 
   after(() => {
-    readFile.restore();
+    mockfs.restore();
   });
 
   describe('read', () => {
-    before(() => {
-      readFile.withArgs('collection.json').returns(
-        Promise.resolve('{"doc1": {"foo": "bar"}, "doc2": {"foo": "bar"}}'));
-    });
-
     it('should read documents from file system', async () => {
-      let docs = await new File(serializer, fs, 'collection.json').read();
+      let docs = await new File(serializer, watcher, 'collection.json').read();
 
       expect(docs).to.eql({
         doc1: {foo: 'bar'},
@@ -42,17 +40,18 @@ describe('File', () => {
     });
 
     it('should get an empty list of documents from file that does not exist', async () => {
-      let docs = await new File(serializer, fs, 'noSuchFile.json').read();
+      let docs = await new File(serializer, watcher, 'noSuchFile.json').read();
 
-      expect(docs).to.be.empty;
+      return expect(docs).to.be.empty;
     });
   });
 
   describe('write', () => {
     it('should write a new collection to file', async () => {
-      await new File(serializer, fs, 'collection.json').write('doc1', {});
+      await new File(serializer, watcher, 'collection.json').write('doc1', {});
 
-      expect(writeFile).to.have.been.calledWith('collection.json', '{"doc1":{}}');
+      return expect(fs.readFile('collection.json', 'utf-8')).to.eventually.eql(
+        '{"doc1":{},"doc2":{"foo":"bar"}}');
     });
   });
 
@@ -63,8 +62,7 @@ describe('File', () => {
 
     describe('file added', () => {
       before(() => {
-        readFile.withArgs('collection.json').returns(
-          Promise.resolve('{"doc1": {"foo": "bar"}}'));
+        mockfs({'collection.json': '{"doc1": {"foo": "bar"}}'});
       });
 
       it('should trigger document-updated event', (done) => {
@@ -74,13 +72,13 @@ describe('File', () => {
           done();
         });
 
-        fs.emit('file-added', 'collection.json');
+        watcher.emit('add', 'collection.json');
       });
     });
 
     describe('file changed', () => {
       before(async () => {
-        readFile.withArgs('collection.json').returns(Promise.resolve('{"doc1": {}, "doc2": {}}'));
+        mockfs({'collection.json': '{"doc1": {}, "doc2": {}}'});
         await file.read();
       });
 
@@ -91,9 +89,8 @@ describe('File', () => {
           done();
         });
 
-        readFile.withArgs('collection.json').returns(
-          Promise.resolve('{"doc1": {}, "doc2": {"foo": "new content"}}'));
-        fs.emit('file-changed', 'collection.json');
+        mockfs({'collection.json': '{"doc1": {}, "doc2": {"foo": "new content"}}'});
+        watcher.emit('change', 'collection.json');
       });
 
       it('should trigger document-removed event when a document has been removed', (done) => {
@@ -102,8 +99,8 @@ describe('File', () => {
           done();
         });
 
-        readFile.withArgs('collection.json').returns(Promise.resolve('{"doc1": {}}'));
-        fs.emit('file-changed', 'collection.json');
+        mockfs({'collection.json': '{"doc1": {}}'});
+        watcher.emit('change', 'collection.json');
       });
     });
   });

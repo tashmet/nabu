@@ -4,12 +4,17 @@ export * from './interfaces';
 
 import {component} from '@ziggurat/tiamat';
 import {IsimudPersistence} from '@ziggurat/isimud-persistence';
-import {FileSystemService} from './service';
 import {FileSystemReporter} from './reporter';
+import * as chokidar from 'chokidar';
 
 @component({
+  definitions: {
+    'isimud.FSWatcher': chokidar.watch([], {
+      ignoreInitial: true,
+      persistent: true
+    })
+  },
   providers: [
-    FileSystemService,
     FileSystemReporter
   ],
   dependencies: [

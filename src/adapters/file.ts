@@ -1,42 +1,48 @@
-import {Document, Serializer} from '@ziggurat/isimud';
+import {Serializer} from '@ziggurat/isimud';
 import {PersistenceAdapter, ObjectMap} from '@ziggurat/isimud-persistence';
-import {FileSystem} from '../interfaces';
 import {EventEmitter} from 'eventemitter3';
-import {cloneDeep, difference, each, intersection, isEqual, keys, map, merge, transform} from 'lodash';
+import {cloneDeep, difference, each, intersection, isEqual, keys, transform} from 'lodash';
+import * as fs from 'fs-extra';
+import {FSWatcher} from 'chokidar';
 
 export class File extends EventEmitter implements PersistenceAdapter {
   private buffer: ObjectMap = {};
 
   public constructor(
     private serializer: Serializer,
-    private fs: FileSystem,
-    private path: string
+    private watcher: FSWatcher,
+    private path: string,
   ) {
     super();
-    fs.on('file-added',   (filePath: string) => { this.onFileAdded(filePath); });
-    fs.on('file-changed', (filePath: string) => { this.onFileChanged(filePath); });
+    watcher
+      .on('add',    filePath => this.onFileAdded(filePath))
+      .on('change', filePath => this.onFileChanged(filePath))
+      .add(path);
   }
 
   public async read(): Promise<ObjectMap> {
     try {
-      return this.set(<ObjectMap>await this.serializer.deserialize(await this.fs.readFile(this.path)));
+      const data = await fs.readFile(this.path, 'utf-8');
+      return this.set(<ObjectMap>await this.serializer.deserialize(data));
     } catch (err) {
       return this.set({});
     }
   }
 
   public async write(id: string, data: Object): Promise<void> {
+    await this.read();
     this.buffer[id] = data;
     return this.flush();
   }
 
   public async remove(id: string): Promise<void> {
+    await this.read();
     delete this.buffer[id];
     return this.flush();
   }
 
   private async flush(): Promise<void> {
-    return this.fs.writeFile(this.path, await this.serializer.serialize(this.buffer));
+    return fs.writeFile(this.path, await this.serializer.serialize(this.buffer));
   }
 
   private async onFileAdded(path: string) {

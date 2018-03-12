@@ -1,22 +1,5 @@
 import {SerializerProvider} from '@ziggurat/isimud';
 
-export interface FileSystem {
-  readDir(path: string): Promise<string[]>;
-  readFile(path: string): Promise<string>;
-  writeFile(path: string, data: string): Promise<void>;
-  remove(path: string): Promise<void>;
-
-  on(event: 'file-added', fn: (path: string) => void): FileSystem;
-  on(event: 'file-changed', fn: (path: string) => void): FileSystem;
-  on(event: 'file-removed', fn: (path: string) => void): FileSystem;
-  on(event: 'file-stored', fn: (data: string, path: string) => void): FileSystem;
-  on(event: 'ready', fn: () => void): FileSystem;
-}
-
-export interface FileSystemConfig {
-  path: string;
-}
-
 export interface DirectoryConfig {
   /**
    * Path to directory.

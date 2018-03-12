@@ -1,7 +1,6 @@
 import {Injector} from '@ziggurat/tiamat';
-import {Collection, Document, Serializer, json} from '@ziggurat/isimud';
+import {json} from '@ziggurat/isimud';
 import {Directory} from '../../src/adapters/directory';
-import {FileSystemService} from '../../src/service';
 import {join} from 'path';
 import {expect} from 'chai';
 import 'mocha';
@@ -10,31 +9,30 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as sinon from 'sinon';
 import * as sinonChai from 'sinon-chai';
+import * as fs from 'fs-extra';
+import * as chokidar from 'chokidar';
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
 describe('Directory', () => {
-  const fs = new FileSystemService({
-    path: 'path/to/content'
-  });
   const serializer = json()(<Injector>{});
-  const readDir = sinon.stub(fs, 'readDir');
-  const readFile = sinon.stub(fs, 'readFile');
-  const writeFile = sinon.stub(fs, 'writeFile');
-  const dir = new Directory(serializer, fs, 'testdir', 'json');
+  const watcher = chokidar.watch([], {});
+  const dir = new Directory(serializer, watcher, 'testdir', 'json');
+
+  beforeEach(() => {
+    mockfs({
+      'testdir/doc1.json': '{"foo": "bar"}',
+      'testdir/doc2.json': '{"foo": "bar"}'
+    });
+  });
 
   after(() => {
-    readDir.restore();
-    readFile.restore();
+    mockfs.restore();
   });
 
   describe('read', () => {
     it('should read documents from file system', async () => {
-      readDir.withArgs('testdir').returns(Promise.resolve(['doc1.json', 'doc2.json']));
-      readFile.withArgs(join('testdir', 'doc1.json')).returns(Promise.resolve('{"foo": "bar"}'));
-      readFile.withArgs(join('testdir', 'doc2.json')).returns(Promise.resolve('{"foo": "bar"}'));
-
       let docs = await dir.read();
 
       expect(docs).to.eql({
@@ -44,7 +42,7 @@ describe('Directory', () => {
     });
 
     it('should fail to read documents from directory that does not exist', () => {
-      readDir.withArgs('testdir').returns(Promise.reject('No such directory'));
+      mockfs({});
 
       return expect(dir.read()).to.eventually.be.rejected;
     });
@@ -52,17 +50,13 @@ describe('Directory', () => {
 
   describe('write', () => {
     it('should write a new collection to file', async () => {
-      await new Directory(serializer, fs, 'testdir', 'json').write('doc1', {});
+      await dir.write('doc1', {});
 
-      expect(writeFile).to.have.been.calledWith(join('testdir', 'doc1.json'), '{}');
+      return expect(fs.readFile('testdir/doc1.json', 'utf-8')).to.eventually.eql('{}');
     });
   });
 
   describe('events', () => {
-    before(() => {
-      readFile.withArgs(join('testdir', 'doc1.json')).returns(Promise.resolve('{"foo": "bar"}'));
-    });
-
     afterEach(() => {
       dir.removeAllListeners();
     });
@@ -75,7 +69,7 @@ describe('Directory', () => {
           done();
         });
 
-        fs.emit('file-added', join('testdir', 'doc1.json'));
+        watcher.emit('add', join('testdir', 'doc1.json'));
       });
     });
 
@@ -87,7 +81,7 @@ describe('Directory', () => {
           done();
         });
 
-        fs.emit('file-changed', join('testdir', 'doc1.json'));
+        watcher.emit('change', join('testdir', 'doc1.json'));
       });
     });
 
@@ -98,7 +92,7 @@ describe('Directory', () => {
           done();
         });
 
-        fs.emit('file-removed', join('testdir', 'doc1.json'));
+        watcher.emit('unlink', join('testdir', 'doc1.json'));
       });
     });
   });
