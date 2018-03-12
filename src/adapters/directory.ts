@@ -31,6 +31,10 @@ export class Directory extends EventEmitter implements PersistenceAdapter {
     await this.fs.writeFile(path, await this.serializer.serialize(data));
   }
 
+  public async remove(id: string): Promise<void> {
+    return this.fs.remove(join(this.path, `${id}.${this.extension}`));
+  }
+
   private async loadFile(path: string): Promise<Object> {
     return this.serializer.deserialize(await this.fs.readFile(path));
   }

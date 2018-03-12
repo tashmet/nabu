@@ -27,6 +27,15 @@ export class File extends EventEmitter implements PersistenceAdapter {
 
   public async write(id: string, data: Object): Promise<void> {
     this.buffer[id] = data;
+    return this.flush();
+  }
+
+  public async remove(id: string): Promise<void> {
+    delete this.buffer[id];
+    return this.flush();
+  }
+
+  private async flush(): Promise<void> {
     return this.fs.writeFile(this.path, await this.serializer.serialize(this.buffer));
   }
 

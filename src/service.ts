@@ -48,6 +48,10 @@ export class FileSystemService extends EventEmitter implements FileSystem {
     this.emit('file-stored', data, path);
   }
 
+  public async remove(path: string): Promise<void> {
+    return fs.remove(path);
+  }
+
   private relativePath(path: string): string {
     return relative(this.config.path, path);
   }
