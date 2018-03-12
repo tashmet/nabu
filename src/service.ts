@@ -49,7 +49,7 @@ export class FileSystemService extends EventEmitter implements FileSystem {
   }
 
   public async remove(path: string): Promise<void> {
-    return fs.remove(path);
+    return fs.remove(this.absolutePath(path));
   }
 
   private relativePath(path: string): string {
