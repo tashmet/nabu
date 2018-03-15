@@ -38,7 +38,7 @@ export class Directory extends EventEmitter implements PersistenceAdapter {
   }
 
   private async loadFile(path: string): Promise<Object> {
-    return this.serializer.deserialize(await fs.readFile(path, 'utf-8'));
+    return this.serializer.deserialize(await fs.readFile(path));
   }
 
   private async onFileUpdated(path: string) {

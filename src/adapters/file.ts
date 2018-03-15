@@ -11,7 +11,7 @@ export class File extends EventEmitter implements PersistenceAdapter {
   public constructor(
     private serializer: Serializer,
     private watcher: FSWatcher,
-    private path: string,
+    private path: string
   ) {
     super();
     watcher
@@ -22,8 +22,8 @@ export class File extends EventEmitter implements PersistenceAdapter {
 
   public async read(): Promise<ObjectMap> {
     try {
-      const data = await fs.readFile(this.path, 'utf-8');
-      return this.set(<ObjectMap>await this.serializer.deserialize(data));
+      const buffer = await fs.readFile(this.path);
+      return this.set(<ObjectMap>await this.serializer.deserialize(buffer));
     } catch (err) {
       return this.set({});
     }
