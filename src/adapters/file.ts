@@ -10,14 +10,16 @@ export class File extends EventEmitter implements PersistenceAdapter {
 
   public constructor(
     private serializer: Serializer,
-    private watcher: FSWatcher,
-    private path: string
+    private path: string,
+    private watcher?: FSWatcher
   ) {
     super();
-    watcher
-      .on('add',    filePath => this.onFileAdded(filePath))
-      .on('change', filePath => this.onFileChanged(filePath))
-      .add(path);
+    if (watcher) {
+      watcher
+        .on('add',    filePath => this.onFileAdded(filePath))
+        .on('change', filePath => this.onFileChanged(filePath))
+        .add(path);
+    }
   }
 
   public async read(): Promise<ObjectMap> {

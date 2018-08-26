@@ -18,7 +18,7 @@ chai.use(sinonChai);
 describe('Directory', () => {
   const serializer = json()(<Injector>{});
   const watcher = chokidar.watch([], {});
-  const dir = new Directory(serializer, watcher, 'testdir', 'json');
+  const dir = new Directory(serializer, 'testdir', 'json', watcher);
 
   beforeEach(() => {
     mockfs({

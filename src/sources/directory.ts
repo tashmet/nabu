@@ -10,7 +10,8 @@ export function directory(config: DirectoryConfig): SourceProvider {
     const persistence = injector.get<Persistence>('isimud.Persistence');
     const watcher = injector.get<FSWatcher>('isimud.FSWatcher');
     return persistence.createCollection(`isimud.Directory:${config.path}`, model,
-      new Directory(config.serializer(injector), watcher, config.path, config.extension)
+      new Directory(config.serializer(injector), config.path, config.extension,
+        config.watch ? watcher : undefined)
     );
   };
 }

@@ -16,6 +16,13 @@ export interface DirectoryConfig {
    * file extension of files in the directory.
    */
   extension: string;
+
+  /**
+   * Monitor directory for changes to its files and update source accordingly.
+   *
+   * @default false
+   */
+  watch?: boolean;
 }
 
 export interface FileConfig {
@@ -29,4 +36,11 @@ export interface FileConfig {
    * documents when reading from and writing to the file system.
    */
   serializer: SerializerProvider;
+
+  /**
+   * Monitor file for changes and update source accordingly.
+   *
+   * @default false
+   */
+  watch?: boolean;
 }

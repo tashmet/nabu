@@ -8,16 +8,18 @@ import {FSWatcher} from 'chokidar';
 export class Directory extends EventEmitter implements PersistenceAdapter {
   public constructor(
     private serializer: Serializer,
-    private watcher: FSWatcher,
     private path: string,
-    private extension: string
+    private extension: string,
+    private watcher?: FSWatcher
   ) {
     super();
-    watcher
-      .on('add',    filePath => this.onFileUpdated(filePath))
-      .on('change', filePath => this.onFileUpdated(filePath))
-      .on('unlink', filePath => this.onFileRemoved(filePath))
-      .add(path);
+    if (watcher) {
+      watcher
+        .on('add',    filePath => this.onFileUpdated(filePath))
+        .on('change', filePath => this.onFileUpdated(filePath))
+        .on('unlink', filePath => this.onFileRemoved(filePath))
+        .add(path);
+    }
   }
 
   public async read(): Promise<ObjectMap> {

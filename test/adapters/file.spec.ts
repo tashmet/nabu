@@ -17,7 +17,7 @@ chai.use(sinonChai);
 describe('File', () => {
   const serializer = json()(<Injector>{});
   const watcher = chokidar.watch([], {});
-  const file = new File(serializer, watcher, 'collection.json');
+  const file = new File(serializer, 'collection.json', watcher);
 
   before(() => {
     mockfs({
@@ -31,7 +31,7 @@ describe('File', () => {
 
   describe('read', () => {
     it('should read documents from file system', async () => {
-      let docs = await new File(serializer, watcher, 'collection.json').read();
+      let docs = await new File(serializer, 'collection.json').read();
 
       expect(docs).to.eql({
         doc1: {foo: 'bar'},
@@ -40,7 +40,7 @@ describe('File', () => {
     });
 
     it('should get an empty list of documents from file that does not exist', async () => {
-      let docs = await new File(serializer, watcher, 'noSuchFile.json').read();
+      let docs = await new File(serializer, 'noSuchFile.json').read();
 
       return expect(docs).to.be.empty;
     });
@@ -48,7 +48,7 @@ describe('File', () => {
 
   describe('write', () => {
     it('should write a new collection to file', async () => {
-      await new File(serializer, watcher, 'collection.json').write('doc1', {});
+      await new File(serializer, 'collection.json').write('doc1', {});
 
       return expect(fs.readFile('collection.json', 'utf-8')).to.eventually.eql(
         '{"doc1":{},"doc2":{"foo":"bar"}}');

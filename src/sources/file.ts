@@ -10,7 +10,7 @@ export function file(config: FileConfig): SourceProvider {
     const persistence = injector.get<Persistence>('isimud.Persistence');
     const watcher = injector.get<FSWatcher>('isimud.FSWatcher');
     return persistence.createCollection(`isimud.File:${config.path}`, model,
-      new File(config.serializer(injector), watcher, config.path)
+      new File(config.serializer(injector), config.path, config.watch ? watcher : undefined)
     );
   };
 }
