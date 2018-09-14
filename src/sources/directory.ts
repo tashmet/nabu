@@ -1,11 +1,11 @@
 import {Injector} from '@ziggurat/tiamat';
-import {Collection, SourceProvider} from '@ziggurat/isimud';
-import {Persistence, PersistenceAdapter} from '@ziggurat/isimud-persistence';
+import {Collection, SourceProducer} from '@ziggurat/isimud';
+import {Persistence} from '@ziggurat/isimud-persistence';
 import {DirectoryConfig} from '../interfaces';
 import {Directory} from '../adapters/directory';
 import {FSWatcher} from 'chokidar';
 
-export function directory(config: DirectoryConfig): SourceProvider {
+export function directory(config: DirectoryConfig): SourceProducer {
   return (injector: Injector, model: string): Collection => {
     const persistence = injector.get<Persistence>('isimud.Persistence');
     const watcher = injector.get<FSWatcher>('isimud.FSWatcher');

@@ -1,4 +1,5 @@
-import {SerializerProvider} from '@ziggurat/isimud';
+import {Producer} from '@ziggurat/tiamat';
+import {Serializer} from '@ziggurat/isimud';
 
 export interface DirectoryConfig {
   /**
@@ -7,10 +8,10 @@ export interface DirectoryConfig {
   path: string;
 
   /**
-   * A serializer provider creating a serializer that will parse and serialize
+   * A serializer producer creating a serializer that will parse and serialize
    * documents when reading from and writing to the file system.
    */
-  serializer: SerializerProvider;
+  serializer: Producer<Serializer>;
 
   /**
    * file extension of files in the directory.
@@ -35,7 +36,7 @@ export interface FileConfig {
    * A serializer provider creating a serializer that will parse and serialize
    * documents when reading from and writing to the file system.
    */
-  serializer: SerializerProvider;
+  serializer: Producer<Serializer>;
 
   /**
    * Monitor file for changes and update source accordingly.
