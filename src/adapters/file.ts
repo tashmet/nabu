@@ -11,7 +11,7 @@ export class File extends EventEmitter implements PersistenceAdapter {
   public constructor(
     private serializer: Serializer,
     private path: string,
-    private watcher?: FSWatcher
+    watcher?: FSWatcher
   ) {
     super();
     if (watcher) {

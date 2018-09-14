@@ -10,7 +10,7 @@ export class Directory extends EventEmitter implements PersistenceAdapter {
     private serializer: Serializer,
     private path: string,
     private extension: string,
-    private watcher?: FSWatcher
+    watcher?: FSWatcher
   ) {
     super();
     if (watcher) {
