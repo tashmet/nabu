@@ -12,7 +12,10 @@ import * as chokidar from 'chokidar';
     'isimud.FSWatcher': chokidar.watch([], {
       ignoreInitial: true,
       persistent: true
-    })
+    }),
+    'isimud.FileSystemConfig': {
+      watch: false
+    }
   },
   providers: [
     FileSystemReporter
