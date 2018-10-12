@@ -25,7 +25,9 @@ export class IsimudFS {
   public constructor(
     @inject('tiamat.Injector') injector: Injector
   ) {
-    if (!injector.get('isimud.FileSystemConfig')) {
+    try {
+      injector.get('isimud.FileSystemConfig');
+    } catch (err) {
       injector.registerInstance('isimud.FileSystemConfig', {
         watch: false
       });
