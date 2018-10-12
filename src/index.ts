@@ -2,7 +2,7 @@ export {file} from './sources/file';
 export {directory} from './sources/directory';
 export * from './interfaces';
 
-import {component} from '@ziggurat/tiamat';
+import {component, inject, Injector} from '@ziggurat/tiamat';
 import {IsimudPersistence} from '@ziggurat/isimud-persistence';
 import {FileSystemReporter} from './reporter';
 import * as chokidar from 'chokidar';
@@ -12,10 +12,7 @@ import * as chokidar from 'chokidar';
     'isimud.FSWatcher': chokidar.watch([], {
       ignoreInitial: true,
       persistent: true
-    }),
-    'isimud.FileSystemConfig': {
-      watch: false
-    }
+    })
   },
   providers: [
     FileSystemReporter
@@ -24,4 +21,14 @@ import * as chokidar from 'chokidar';
     IsimudPersistence
   ]
 })
-export class IsimudFS {}
+export class IsimudFS {
+  public constructor(
+    @inject('tiamat.Injector') injector: Injector
+  ) {
+    if (!injector.get('isimud.FileSystemConfig')) {
+      injector.registerInstance('isimud.FileSystemConfig', {
+        watch: false
+      });
+    }
+  }
+}
