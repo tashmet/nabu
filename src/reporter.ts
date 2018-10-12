@@ -9,7 +9,7 @@ let log = require('fancy-log');
 })
 export class FileSystemReporter {
   public constructor(
-    @inject('isimud.FSWatcher') watcher: FSWatcher
+    @inject('chokidar.FSWatcher') watcher: FSWatcher
   ) {
     watcher
       .on('add',    path => log(chalk.cyan('ADD ') + path))

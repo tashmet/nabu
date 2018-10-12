@@ -9,7 +9,7 @@ import * as chokidar from 'chokidar';
 
 @component({
   definitions: {
-    'isimud.FSWatcher': chokidar.watch([], {
+    'chokidar.FSWatcher': chokidar.watch([], {
       ignoreInitial: true,
       persistent: true
     })
