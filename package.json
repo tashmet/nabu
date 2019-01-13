@@ -1,6 +1,6 @@
 {
   "name": "@ziggurat/isimud-fs",
-  "version": "0.6.11",
+  "version": "0.6.12",
   "description": "Isimud file system persistence",
   "scripts": {
     "test": "mocha --opts mocha.opts"
@@ -33,7 +33,7 @@
     "@ziggurat/amelatu": "^0.8.5",
     "@ziggurat/isimud": "^0.32.0",
     "@ziggurat/meta": "^0.1.2",
-    "@ziggurat/tiamat": "^0.9.3",
+    "@ziggurat/tiamat": "^0.10.1",
     "chai": "^4.0.2",
     "chai-as-promised": "^7.1.1",
     "gulp": "^3.9.1",
@@ -53,6 +53,6 @@
     "@ziggurat/amelatu": "^0.8.5",
     "@ziggurat/isimud": "^0.32.0",
     "@ziggurat/meta": "^0.1.2",
-    "@ziggurat/tiamat": "^0.9.3"
+    "@ziggurat/tiamat": "^0.10.1"
   }
 }
