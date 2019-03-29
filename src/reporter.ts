@@ -1,16 +1,15 @@
-import {provider, inject} from '@ziggurat/tiamat';
+import {provider} from '@ziggurat/tiamat';
 import {FSWatcher} from 'chokidar';
 import * as chalk from 'chalk';
 
 let log = require('fancy-log');
 
 @provider({
-  key: 'isimud.FileSystemReporter'
+  key: 'isimud.FileSystemReporter',
+  inject: ['chokidar.FSWatcher']
 })
 export class FileSystemReporter {
-  public constructor(
-    @inject('chokidar.FSWatcher') watcher: FSWatcher
-  ) {
+  public constructor(watcher: FSWatcher) {
     watcher
       .on('add',    path => log(chalk.cyan('ADD ') + path))
       .on('change', path => log(chalk.cyan('CHG ') + path))

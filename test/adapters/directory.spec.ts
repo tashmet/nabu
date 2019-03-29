@@ -1,4 +1,4 @@
-import {Injector} from '@ziggurat/tiamat';
+import {Container} from '@ziggurat/tiamat';
 import {json} from '@ziggurat/isimud';
 import {Directory} from '../../src/adapters/directory';
 import {join} from 'path';
@@ -16,7 +16,7 @@ chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
 describe('Directory', () => {
-  const serializer = json()(<Injector>{});
+  const serializer = json()(<Container>{});
   const watcher = chokidar.watch([], {});
   const dir = new Directory(serializer, 'testdir', 'json', watcher);
 

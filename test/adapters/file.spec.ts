@@ -1,4 +1,4 @@
-import {Injector} from '@ziggurat/tiamat';
+import {Container} from '@ziggurat/tiamat';
 import {json} from '@ziggurat/isimud';
 import {File} from '../../src/adapters/file';
 import {expect} from 'chai';
@@ -15,7 +15,7 @@ chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
 describe('File', () => {
-  const serializer = json()(<Injector>{});
+  const serializer = json()(<Container>{});
   const watcher = chokidar.watch([], {});
   const file = new File(serializer, 'collection.json', watcher);
 
