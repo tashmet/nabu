@@ -1,5 +1,5 @@
 import {Container} from '@ziggurat/tiamat';
-import {json} from '@ziggurat/isimud';
+import {json} from '@ziggurat/json';
 import {File} from '../../src/adapters/file';
 import {expect} from 'chai';
 import 'mocha';

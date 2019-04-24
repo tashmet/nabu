@@ -1,4 +1,4 @@
-import {Serializer} from '@ziggurat/isimud';
+import {Serializer} from '@ziggurat/common';
 import {PersistenceAdapter, ObjectMap} from '@ziggurat/isimud-persistence';
 import {EventEmitter} from 'eventemitter3';
 import {cloneDeep, difference, each, intersection, isEqual, keys, transform} from 'lodash';

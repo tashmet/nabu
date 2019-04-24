@@ -1,5 +1,5 @@
 import {Producer} from '@ziggurat/tiamat';
-import {Serializer} from '@ziggurat/isimud';
+import {Serializer} from '@ziggurat/common';
 
 export interface DirectoryConfig {
   /**
