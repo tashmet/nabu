@@ -3,7 +3,6 @@ export {directory} from './sources/directory';
 export * from './interfaces';
 
 import {component} from '@ziggurat/tiamat';
-import {IsimudPersistence} from '@ziggurat/isimud-persistence';
 import {FileSystemReporter} from './reporter';
 import {FileSystemConfig} from './interfaces';
 import * as chokidar from 'chokidar';
@@ -20,7 +19,7 @@ import * as chokidar from 'chokidar';
     FileSystemReporter
   ],
   dependencies: [
-    IsimudPersistence
+    import('@ziggurat/isimud-persistence')
   ]
 })
-export class IsimudFS {}
+export default class IsimudFS {}
