@@ -1,5 +1,4 @@
-import {Serializer} from '@ziggurat/common';
-import {PersistenceAdapter, ObjectMap} from '@ziggurat/isimud-persistence';
+import {PersistenceAdapter, ObjectMap, Serializer} from '../interfaces';
 import {EventEmitter} from 'eventemitter3';
 import {basename, dirname, join} from 'path';
 import * as fs from 'fs-extra';

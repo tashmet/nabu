@@ -1,3 +1,4 @@
+export {json} from './json';
 export {file} from './sources/file';
 export {directory} from './sources/directory';
 export * from './interfaces';
@@ -13,13 +14,10 @@ import * as chokidar from 'chokidar';
       ignoreInitial: true,
       persistent: true
     }),
-    'isimud.FileSystemConfig': {watch: false} as FileSystemConfig
+    'nabu.FileSystemConfig': {watch: false} as FileSystemConfig
   },
   providers: [
     FileSystemReporter
   ],
-  dependencies: [
-    import('@ziggurat/isimud-persistence')
-  ]
 })
-export default class IsimudFS {}
+export default class Nabu {}

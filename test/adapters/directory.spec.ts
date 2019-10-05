@@ -1,5 +1,5 @@
 import {Container} from '@ziggurat/tiamat';
-import {json} from '@ziggurat/json';
+import {json} from '../../src/json';
 import {Directory} from '../../src/adapters/directory';
 import {join} from 'path';
 import {expect} from 'chai';

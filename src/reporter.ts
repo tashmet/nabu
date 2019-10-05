@@ -5,7 +5,7 @@ import * as chalk from 'chalk';
 let log = require('fancy-log');
 
 @provider({
-  key: 'isimud.FileSystemReporter',
+  key: 'nabu.FileSystemReporter',
   inject: ['chokidar.FSWatcher']
 })
 export class FileSystemReporter {

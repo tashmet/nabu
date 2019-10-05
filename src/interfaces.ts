@@ -1,5 +1,19 @@
 import {Producer} from '@ziggurat/tiamat';
-import {Serializer} from '@ziggurat/common';
+
+/**
+ * Serializer for reading and writing objects.
+ */
+export interface Serializer {
+  /**
+   * Load an object from buffer.
+   */
+  deserialize(buffer: Buffer): Promise<object>;
+
+  /**
+   * Store an object to buffer.
+   */
+  serialize(data: object): Promise<Buffer>;
+}
 
 export interface DirectoryConfig {
   /**
@@ -39,4 +53,18 @@ export interface FileSystemConfig {
    * @default false
    */
   watch: boolean;
+}
+
+export type ObjectMap = {[id: string]: Object};
+
+export interface PersistenceAdapter {
+  write(id: string, data: Object): Promise<void>;
+
+  read(): Promise<ObjectMap>;
+
+  remove(id: string): Promise<void>;
+
+  on(event: 'document-updated', fn: (id: string, data: Object) => void): PersistenceAdapter;
+
+  on(event: 'document-removed', fn: (id: string) => void): PersistenceAdapter;
 }
