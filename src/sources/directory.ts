@@ -4,7 +4,7 @@ import {basename, dirname, join} from 'path';
 import * as fs from 'fs-extra';
 import {Container} from '@ziggurat/tiamat';
 import {Collection, CollectionProducer, MemoryCollection} from '@ziggurat/ziggurat';
-import {PersistenceCollection} from '../persistence';
+import {PersistenceCollection} from '../collections/persistence';
 import {
   DirectoryConfig, FileSystemConfig, PersistenceAdapter, ObjectMap, Serializer
 } from '../interfaces';

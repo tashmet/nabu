@@ -1,5 +1,5 @@
 import {Collection, QueryOptions} from '@ziggurat/ziggurat';
-import {PersistenceAdapter, ObjectMap} from './interfaces';
+import {PersistenceAdapter, ObjectMap} from '../interfaces';
 import {EventEmitter} from 'eventemitter3';
 import {merge} from 'lodash';
 
