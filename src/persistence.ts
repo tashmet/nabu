@@ -1,6 +1,7 @@
 import {Collection, QueryOptions} from '@ziggurat/ziggurat';
 import {PersistenceAdapter, ObjectMap} from './interfaces';
 import {EventEmitter} from 'eventemitter3';
+import {merge} from 'lodash';
 
 export class PersistenceCollection extends EventEmitter implements Collection {
   private populatePromise: Promise<void>;
@@ -20,13 +21,13 @@ export class PersistenceCollection extends EventEmitter implements Collection {
       this.load(id, data);
     });
     adapter.on('document-removed', (id: string) => {
-      cache.remove({'@id': id});
+      cache.remove({_id: id});
     });
     this.populatePromise = this.populate();
   }
 
   public async upsert(doc: any): Promise<any> {
-    await this.adapter.write(doc['@id'], doc);
+    await this.adapter.write(doc._id, doc);
     return this.cache.upsert(doc);
   }
 
@@ -43,7 +44,7 @@ export class PersistenceCollection extends EventEmitter implements Collection {
   public async remove(selector: Object): Promise<any[]> {
     let affected = await this.cache.remove(selector);
     for (let doc of affected) {
-      await this.adapter.remove(doc['@id']);
+      await this.adapter.remove(doc._id);
     }
     return affected;
   }
@@ -58,7 +59,7 @@ export class PersistenceCollection extends EventEmitter implements Collection {
   }
 
   private async load(id: string, doc: Object): Promise<any> {
-    return this.cache.upsert(doc);
+    return this.cache.upsert(merge({}, doc, {_id: id}));
   }
 
   private async populate(): Promise<void> {
