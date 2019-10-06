@@ -1,6 +1,6 @@
 {
   "name": "@ziggurat/nabu",
-  "version": "0.19.7",
+  "version": "0.19.8",
   "description": "Ziggurat file system persistence",
   "scripts": {
     "test": "mocha --opts mocha.opts"
@@ -10,6 +10,7 @@
   "author": "Björn Andersson",
   "license": "MIT",
   "dependencies": {
+    "@types/showdown": "^1.9.3",
     "chalk": "^2.4.0",
     "chokidar": "^3.2.1",
     "eventemitter3": "^3.0.0",
@@ -17,6 +18,7 @@
     "fs-extra": "^8.1.0",
     "js-yaml": "^3.13.1",
     "lodash": "^4.17.4",
+    "showdown": "^1.9.0",
     "yaml-front-matter": "^4.0.0"
   },
   "devDependencies": {

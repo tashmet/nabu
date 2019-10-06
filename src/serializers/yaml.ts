@@ -1,5 +1,5 @@
 import {Producer} from '@ziggurat/tiamat';
-import {Serializer} from '../interfaces';
+import {Serializer, Converter} from '../interfaces';
 import {merge, omit} from 'lodash';
 
 import jsYaml = require('js-yaml');
@@ -19,7 +19,7 @@ export interface YamlConfig {
    *
    * default: false
    */
-  frontMatter?: boolean;
+  frontMatter?: boolean | Converter;
 
   /**
    * If frontMatter is set to true the content of the file will be stored in the result object.
@@ -115,7 +115,7 @@ const defaultOptions: YamlConfig = {
 };
 
 export class YamlSerializer implements Serializer {
-  private config: any = {};
+  private config: YamlConfig = {};
 
   public constructor(config: YamlConfig) {
     merge(this.config, defaultOptions, config);
@@ -125,7 +125,11 @@ export class YamlSerializer implements Serializer {
     const data = buffer.toString('utf-8');
     if (this.config.frontMatter) {
       let doc = yamlFront.loadFront(data);
-      doc[this.config.contentKey] = doc.__content.trim();
+      let content = doc.__content.trim();
+      if (typeof this.config.frontMatter !== 'boolean') {
+        content = await this.config.frontMatter.publish(content);
+      }
+      doc[this.config.contentKey as string] = content;
       delete doc.__content;
       return doc;
     } else {
@@ -136,10 +140,11 @@ export class YamlSerializer implements Serializer {
   public async serialize(data: any): Promise<Buffer> {
     let options = omit(this.config, ['frontMatter', 'contentKey']);
     if (this.config.frontMatter) {
-      let frontMatter = jsYaml.safeDump(omit(data, this.config.contentKey), options);
+      const key = this.config.contentKey as string;
+      let frontMatter = jsYaml.safeDump(omit(data, key), options);
       let output = '---\n' + frontMatter + '---';
-      if (data[this.config.contentKey]) {
-        output += '\n' + data[this.config.contentKey].replace(/^\s+|\s+$/g, '');
+      if (data[key]) {
+        output += '\n' + data[key].replace(/^\s+|\s+$/g, '');
       }
       return Buffer.from(output, 'utf-8');
     } else {

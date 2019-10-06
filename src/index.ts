@@ -1,3 +1,4 @@
+export {markdown} from './converters/markdown';
 export {json} from './serializers/json';
 export {yaml, YamlConfig} from './serializers/yaml';
 export {file} from './sources/file';

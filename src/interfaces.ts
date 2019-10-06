@@ -15,6 +15,10 @@ export interface Serializer {
   serialize(data: object): Promise<Buffer>;
 }
 
+export interface Converter {
+  publish(text: string): Promise<string>;
+}
+
 export interface DirectoryConfig {
   /**
    * Path to directory.
