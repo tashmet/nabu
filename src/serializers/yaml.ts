@@ -114,7 +114,7 @@ const defaultOptions: YamlConfig = {
   condenseFlow: false
 };
 
-class YamlSerializer implements Serializer {
+export class YamlSerializer implements Serializer {
   private config: any = {};
 
   public constructor(config: YamlConfig) {
