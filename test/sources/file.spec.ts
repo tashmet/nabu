@@ -1,6 +1,6 @@
 import {Container} from '@ziggurat/tiamat';
-import {json} from '../../src/json';
-import {File} from '../../src/adapters/file';
+import {json} from '../../src/serializers/json';
+import {File} from '../../src/sources/file';
 import {expect} from 'chai';
 import 'mocha';
 import * as chai from 'chai';

@@ -1,5 +1,5 @@
 import {Producer} from '@ziggurat/tiamat';
-import {Serializer} from './interfaces';
+import {Serializer} from '../interfaces';
 
 export function json(): Producer<Serializer> {
   return () => new JsonSerializer();

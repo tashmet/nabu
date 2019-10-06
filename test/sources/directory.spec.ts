@@ -1,6 +1,6 @@
 import {Container} from '@ziggurat/tiamat';
-import {json} from '../../src/json';
-import {Directory} from '../../src/adapters/directory';
+import {json} from '../../src/serializers/json';
+import {Directory} from '../../src/sources/directory';
 import {join} from 'path';
 import {expect} from 'chai';
 import 'mocha';

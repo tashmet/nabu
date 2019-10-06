@@ -1,5 +1,5 @@
 import {Producer} from '@ziggurat/tiamat';
-import {Serializer} from './interfaces';
+import {Serializer} from '../interfaces';
 import {merge, omit} from 'lodash';
 
 import jsYaml = require('js-yaml');

@@ -1,5 +1,5 @@
-export {json} from './json';
-export {yaml, YamlConfig} from './yaml';
+export {json} from './serializers/json';
+export {yaml, YamlConfig} from './serializers/yaml';
 export {file} from './sources/file';
 export {directory} from './sources/directory';
 export * from './interfaces';
