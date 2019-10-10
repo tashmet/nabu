@@ -11,7 +11,7 @@ import {FileSystemConfig} from './interfaces';
 import * as chokidar from 'chokidar';
 
 @component({
-  definitions: {
+  instances: {
     'chokidar.FSWatcher': chokidar.watch([], {
       ignoreInitial: true,
       persistent: true
