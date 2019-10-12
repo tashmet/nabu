@@ -11,8 +11,8 @@ import {
 
 export function directory(config: DirectoryConfig): CollectionProducer {
   return (container: Container, name: string): Collection => {
-    const fsConfig = container.get<FileSystemConfig>('nabu.FileSystemConfig');
-    const watcher = fsConfig.watch ? container.get<FSWatcher>('chokidar.FSWatcher') : undefined;
+    const fsConfig = container.resolve<FileSystemConfig>('nabu.FileSystemConfig');
+    const watcher = fsConfig.watch ? container.resolve<FSWatcher>('chokidar.FSWatcher') : undefined;
 
     return new PersistenceCollection(
       new Directory(config.serializer(container), config.path, config.extension, watcher),

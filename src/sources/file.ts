@@ -11,8 +11,8 @@ import {
 
 export function file(config: FileConfig): CollectionProducer {
   return (container: Container, name: string): Collection => {
-    const fsConfig = container.get<FileSystemConfig>('nabu.FileSystemConfig');
-    const watcher = fsConfig.watch ? container.get<FSWatcher>('chokidar.FSWatcher') : undefined;
+    const fsConfig = container.resolve<FileSystemConfig>('nabu.FileSystemConfig');
+    const watcher = fsConfig.watch ? container.resolve<FSWatcher>('chokidar.FSWatcher') : undefined;
 
     return new PersistenceCollection(
       new File(config.serializer(container), config.path, watcher),
