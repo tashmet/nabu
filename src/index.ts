@@ -22,8 +22,10 @@ import * as chokidar from 'chokidar';
   },
   providers: [
     FileSystemReporter,
+  ],
+  factories: [
     FileCollectionFactory,
     DirectoryCollectionFactory,
-  ],
+  ]
 })
 export default class Nabu {}

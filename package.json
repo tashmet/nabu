@@ -1,6 +1,6 @@
 {
   "name": "@ziggurat/nabu",
-  "version": "0.21.0",
+  "version": "0.21.1",
   "description": "Ziggurat file system persistence",
   "scripts": {
     "test": "mocha --opts mocha.opts"
