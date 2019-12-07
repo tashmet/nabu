@@ -8,6 +8,8 @@ export * from './interfaces';
 import {component} from '@ziggurat/tiamat';
 import {FileSystemReporter} from './reporter';
 import {FileSystemConfig} from './interfaces';
+import {FileCollectionFactory} from './sources/file';
+import {DirectoryCollectionFactory} from './sources/directory';
 import * as chokidar from 'chokidar';
 
 @component({
@@ -19,7 +21,9 @@ import * as chokidar from 'chokidar';
     'nabu.FileSystemConfig': {watch: false} as FileSystemConfig
   },
   providers: [
-    FileSystemReporter
+    FileSystemReporter,
+    FileCollectionFactory,
+    DirectoryCollectionFactory,
   ],
 })
 export default class Nabu {}

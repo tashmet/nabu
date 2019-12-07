@@ -1,9 +1,12 @@
-import {Producer} from '@ziggurat/tiamat';
-import {Serializer} from '../interfaces';
+import {Serializer, SerializerFactory} from '../interfaces';
 
-export function json(): Producer<Serializer> {
-  return () => new JsonSerializer();
+export class JsonSerializerFactory extends SerializerFactory {
+  public create(): Serializer {
+    return new JsonSerializer();
+  }
 }
+
+export const json = () => new JsonSerializerFactory();
 
 class JsonSerializer implements Serializer {
   public deserialize(buffer: Buffer): Promise<Object> {

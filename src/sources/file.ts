@@ -2,24 +2,34 @@ import {FSWatcher} from 'chokidar';
 import {EventEmitter} from 'eventemitter3';
 import {cloneDeep, difference, each, intersection, isEqual, keys, transform} from 'lodash';
 import * as fs from 'fs-extra';
-import {Container} from '@ziggurat/tiamat';
-import {Collection, CollectionProducer, MemoryCollection} from '@ziggurat/ziggurat';
+import {Collection, CollectionFactory, MemoryCollection} from '@ziggurat/ziggurat';
 import {PersistenceCollection} from '../collections/persistence';
 import {
   FileConfig, FileSystemConfig, PersistenceAdapter, ObjectMap, Serializer
 } from '../interfaces';
 
-export function file(config: FileConfig): CollectionProducer {
-  return (container: Container, name: string): Collection => {
-    const fsConfig = container.resolve<FileSystemConfig>('nabu.FileSystemConfig');
-    const watcher = fsConfig.watch ? container.resolve<FSWatcher>('chokidar.FSWatcher') : undefined;
+export class FileCollectionFactory extends CollectionFactory {
+  public static inject: ['nabu.FileSystemConfig', 'chokidar.FSWatcher'];
 
-    return new PersistenceCollection(
-      new File(config.serializer(container), config.path, watcher),
-      new MemoryCollection(name)
-    );
-  };
+  constructor(private config: FileConfig) {
+    super();
+  }
+
+  public create(name: string): Collection {
+    return FileCollectionFactory.resolve((fsConfig: FileSystemConfig, watcher: FSWatcher) => {
+      return new PersistenceCollection(
+        new File(
+          this.config.serializer.create(),
+          this.config.path,
+          fsConfig.watch ? watcher : undefined
+        ),
+        new MemoryCollection(name)
+      );
+    });
+  }
 }
+
+export const file = (config: FileConfig) => new FileCollectionFactory(config);
 
 export class File extends EventEmitter implements PersistenceAdapter {
   private buffer: ObjectMap = {};

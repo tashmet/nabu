@@ -1,4 +1,4 @@
-import {Producer} from '@ziggurat/tiamat';
+import {Factory} from '@ziggurat/tiamat';
 
 /**
  * Serializer for reading and writing objects.
@@ -15,8 +15,16 @@ export interface Serializer {
   serialize(data: object): Promise<Buffer>;
 }
 
+export abstract class SerializerFactory extends Factory<Serializer> {
+  public abstract create(): Serializer;
+}
+
 export interface Converter {
   publish(text: string): Promise<string>;
+}
+
+export abstract class ConverterFactory extends Factory<Converter> {
+  public abstract create(): Converter;
 }
 
 export interface DirectoryConfig {
@@ -26,10 +34,10 @@ export interface DirectoryConfig {
   path: string;
 
   /**
-   * A serializer producer creating a serializer that will parse and serialize
+   * A serializer factory creating a serializer that will parse and serialize
    * documents when reading from and writing to the file system.
    */
-  serializer: Producer<Serializer>;
+  serializer: SerializerFactory;
 
   /**
    * file extension of files in the directory.
@@ -44,10 +52,10 @@ export interface FileConfig {
   path: string;
 
   /**
-   * A serializer provider creating a serializer that will parse and serialize
+   * A serializer factory creating a serializer that will parse and serialize
    * documents when reading from and writing to the file system.
    */
-  serializer: Producer<Serializer>;
+  serializer: SerializerFactory;
 }
 
 export interface FileSystemConfig {

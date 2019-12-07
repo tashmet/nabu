@@ -1,4 +1,3 @@
-import {Container} from '@ziggurat/tiamat';
 import {json} from '../../src/serializers/json';
 import {File} from '../../src/sources/file';
 import {expect} from 'chai';
@@ -15,7 +14,7 @@ chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
 describe('File', () => {
-  const serializer = json()(<Container>{});
+  const serializer = json().create();
   const watcher = chokidar.watch([], {});
   const file = new File(serializer, 'collection.json', watcher);
 

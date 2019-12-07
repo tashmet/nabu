@@ -1,5 +1,4 @@
-import {Producer} from '@ziggurat/tiamat';
-import {Serializer, Converter} from '../interfaces';
+import {Serializer, Converter, SerializerFactory} from '../interfaces';
 import {merge, omit} from 'lodash';
 
 import jsYaml = require('js-yaml');
@@ -96,10 +95,17 @@ export interface YamlConfig {
   condenseFlow?: boolean;
 }
 
-export function yaml(config?: YamlConfig): Producer<Serializer> {
-  return () => new YamlSerializer(config || {});
+export class YamlSerializerFactory extends SerializerFactory {
+  public constructor(private config: YamlConfig) {
+    super();
+  }
+
+  public create(): Serializer {
+    return new YamlSerializer(this.config);
+  }
 }
 
+export const yaml = (config?: YamlConfig) => new YamlSerializerFactory(config || {});
 
 const defaultOptions: YamlConfig = {
   frontMatter: false,

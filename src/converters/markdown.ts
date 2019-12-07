@@ -1,9 +1,17 @@
 import * as showdown from 'showdown';
-import {Converter} from '../interfaces';
+import {Converter, ConverterFactory} from '../interfaces';
 
-export function markdown(converter: showdown.Converter): Converter {
-  return new MarkdownConverter(converter);
+export class MarkdownConverterFactory extends ConverterFactory {
+  public constructor(private converter: showdown.Converter) {
+    super();
+  }
+
+  public create(): Converter {
+    return new MarkdownConverter(this.converter);
+  }
 }
+
+export const markdown = (converter: showdown.Converter) => new MarkdownConverterFactory(converter);
 
 class MarkdownConverter {
   public constructor(private converter: showdown.Converter) {}

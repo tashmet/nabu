@@ -1,4 +1,3 @@
-import {Container} from '@ziggurat/tiamat';
 import {json} from '../../src/serializers/json';
 import {Directory} from '../../src/sources/directory';
 import {join} from 'path';
@@ -16,7 +15,7 @@ chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
 describe('Directory', () => {
-  const serializer = json()(<Container>{});
+  const serializer = json().create();
   const watcher = chokidar.watch([], {});
   const dir = new Directory(serializer, 'testdir', 'json', watcher);
 

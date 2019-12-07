@@ -2,24 +2,35 @@ import {FSWatcher} from 'chokidar';
 import {EventEmitter} from 'eventemitter3';
 import {basename, dirname, join} from 'path';
 import * as fs from 'fs-extra';
-import {Container} from '@ziggurat/tiamat';
-import {Collection, CollectionProducer, MemoryCollection} from '@ziggurat/ziggurat';
+import {Collection, CollectionFactory, MemoryCollection} from '@ziggurat/ziggurat';
 import {PersistenceCollection} from '../collections/persistence';
 import {
   DirectoryConfig, FileSystemConfig, PersistenceAdapter, ObjectMap, Serializer
 } from '../interfaces';
 
-export function directory(config: DirectoryConfig): CollectionProducer {
-  return (container: Container, name: string): Collection => {
-    const fsConfig = container.resolve<FileSystemConfig>('nabu.FileSystemConfig');
-    const watcher = fsConfig.watch ? container.resolve<FSWatcher>('chokidar.FSWatcher') : undefined;
+export class DirectoryCollectionFactory extends CollectionFactory {
+  public static inject: ['nabu.FileSystemConfig', 'chokidar.FSWatcher'];
 
-    return new PersistenceCollection(
-      new Directory(config.serializer(container), config.path, config.extension, watcher),
-      new MemoryCollection(name)
-    );
-  };
+  constructor(private config: DirectoryConfig) {
+    super();
+  }
+
+  public create(name: string): Collection {
+    return DirectoryCollectionFactory.resolve((fsConfig: FileSystemConfig, watcher: FSWatcher) => {
+      return new PersistenceCollection(
+        new Directory(
+          this.config.serializer.create(),
+          this.config.path,
+          this.config.extension,
+          fsConfig.watch ? watcher : undefined
+        ),
+        new MemoryCollection(name)
+      );
+    });
+  }
 }
+
+export const directory = (config: DirectoryConfig) => new DirectoryCollectionFactory(config);
 
 export class Directory extends EventEmitter implements PersistenceAdapter {
   public constructor(
