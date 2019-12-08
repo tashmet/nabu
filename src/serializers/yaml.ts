@@ -1,4 +1,4 @@
-import {Serializer, Converter, SerializerFactory} from '../interfaces';
+import {Converter, ConverterFactory, Serializer, SerializerFactory} from '../interfaces';
 import {merge, omit} from 'lodash';
 
 import jsYaml = require('js-yaml');
@@ -18,7 +18,7 @@ export interface YamlConfig {
    *
    * default: false
    */
-  frontMatter?: boolean | Converter;
+  frontMatter?: boolean | ConverterFactory;
 
   /**
    * If frontMatter is set to true the content of the file will be stored in the result object.
@@ -122,9 +122,13 @@ const defaultOptions: YamlConfig = {
 
 export class YamlSerializer implements Serializer {
   private config: YamlConfig = {};
+  private frontMatterConverter: Converter | undefined;
 
   public constructor(config: YamlConfig) {
     merge(this.config, defaultOptions, config);
+    if (config.frontMatter instanceof ConverterFactory) {
+      this.frontMatterConverter = config.frontMatter.create();
+    }
   }
 
   public async deserialize(buffer: Buffer): Promise<object> {
@@ -132,8 +136,8 @@ export class YamlSerializer implements Serializer {
     if (this.config.frontMatter) {
       let doc = yamlFront.loadFront(data);
       let content = doc.__content.trim();
-      if (typeof this.config.frontMatter !== 'boolean') {
-        content = await this.config.frontMatter.publish(content);
+      if (this.frontMatterConverter) {
+        content = await this.frontMatterConverter.publish(content);
       }
       doc[this.config.contentKey as string] = content;
       delete doc.__content;
