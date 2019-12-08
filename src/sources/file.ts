@@ -9,7 +9,7 @@ import {
 } from '../interfaces';
 
 export class FileCollectionFactory extends CollectionFactory {
-  public static inject: ['nabu.FileSystemConfig', 'chokidar.FSWatcher'];
+  public static inject = ['nabu.FileSystemConfig', 'chokidar.FSWatcher'];
 
   constructor(private config: FileConfig) {
     super();
