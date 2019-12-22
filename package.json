@@ -1,6 +1,6 @@
 {
   "name": "@ziggurat/nabu",
-  "version": "0.21.3",
+  "version": "0.22.0",
   "description": "Ziggurat file system persistence",
   "scripts": {
     "test": "mocha --opts mocha.opts"
@@ -34,8 +34,8 @@
     "@types/showdown": "^1.9.3",
     "@types/sinon": "^2.3.6",
     "@types/sinon-chai": "^2.7.29",
-    "@ziggurat/tiamat": "^0.19.0",
-    "@ziggurat/ziggurat": "^0.44.0",
+    "@ziggurat/tiamat": "^0.20.0",
+    "@ziggurat/ziggurat": "^0.45.0",
     "chai": "^4.0.2",
     "chai-as-promised": "^7.1.1",
     "dedent": "^0.7.0",
@@ -53,7 +53,7 @@
     "typescript": "^2.5.0"
   },
   "peerDependencies": {
-    "@ziggurat/tiamat": "^0.19.0",
-    "@ziggurat/ziggurat": "^0.44.0"
+    "@ziggurat/tiamat": "^0.20.0",
+    "@ziggurat/ziggurat": "^0.45.0"
   }
 }
