@@ -9,14 +9,12 @@ import {
 } from '../interfaces';
 
 export class DirectoryCollectionFactory extends CollectionFactory {
-  public static inject = ['nabu.FileSystemConfig', 'chokidar.FSWatcher'];
-
   constructor(private config: DirectoryConfig) {
-    super();
+    super('nabu.FileSystemConfig', 'chokidar.FSWatcher');
   }
 
   public create(name: string): Collection {
-    return DirectoryCollectionFactory.resolve((fsConfig: FileSystemConfig, watcher: FSWatcher) => {
+    return this.resolve((fsConfig: FileSystemConfig, watcher: FSWatcher) => {
       return new PersistenceCollection(
         new Directory(
           this.config.serializer.create(),
