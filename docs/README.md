@@ -10,5 +10,21 @@ Nabu is a set of tools for reading and writing Ziggurat content on disk. It allo
 $ npm install @ziggurat/nabu
 ```
 
+## Usage
 
+The package exports a component that should be imported as a dependency in your application. It can also optionally be configured to watch for changes to files on disk.
+
+```typescript
+@component({
+  dependencies: [
+    import('@ziggurat/nabu')
+  ],
+  providers: [
+    Provider.of<FileSystemConfig>('nabu.FileSystemConfig', {
+      watch: true
+    })
+  ]
+})
+class Application {}
+```
 
