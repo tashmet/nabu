@@ -20,7 +20,7 @@ The package exports a component that should be imported as a dependency in your 
     import('@ziggurat/nabu')
   ],
   providers: [
-    Provider.of<FileSystemConfig>('nabu.FileSystemConfig', {
+    Provider.ofInstance<FileSystemConfig>('nabu.FileSystemConfig', {
       watch: true
     })
   ]
