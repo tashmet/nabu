@@ -1,4 +1,4 @@
-import {Factory} from '@ziggurat/tiamat';
+import {Factory} from '@ziqquratu/ziqquratu';
 
 /**
  * Serializer for reading and writing objects.

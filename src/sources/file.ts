@@ -2,7 +2,7 @@ import {FSWatcher} from 'chokidar';
 import {EventEmitter} from 'eventemitter3';
 import {cloneDeep, difference, each, intersection, isEqual, keys, transform} from 'lodash';
 import * as fs from 'fs-extra';
-import {Collection, CollectionFactory, MemoryCollection} from '@ziggurat/ziggurat';
+import {Collection, CollectionFactory, MemoryCollection} from '@ziqquratu/ziqquratu';
 import {PersistenceCollection} from '../collections/persistence';
 import {
   FileConfig, FileSystemConfig, PersistenceAdapter, ObjectMap, Serializer

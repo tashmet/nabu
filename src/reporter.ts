@@ -1,4 +1,4 @@
-import {provider} from '@ziggurat/tiamat';
+import {provider} from '@ziqquratu/ziqquratu';
 import {FSWatcher} from 'chokidar';
 
 let log = require('fancy-log');

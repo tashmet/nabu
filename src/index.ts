@@ -5,7 +5,7 @@ export {file} from './sources/file';
 export {directory} from './sources/directory';
 export * from './interfaces';
 
-import {component, Provider} from '@ziggurat/tiamat';
+import {component, Provider} from '@ziqquratu/ziqquratu';
 import {FileSystemReporter} from './reporter';
 import {FileSystemConfig} from './interfaces';
 import {FileCollectionFactory} from './sources/file';

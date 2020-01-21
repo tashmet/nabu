@@ -1,4 +1,4 @@
-import {Collection, MemoryCollection} from '@ziggurat/ziggurat';
+import {Collection, MemoryCollection} from '@ziqquratu/ziqquratu';
 import {ObjectMap, PersistenceAdapter} from '../../src/interfaces';
 import {PersistenceCollection} from '../../src/collections/persistence';
 import {EventEmitter} from 'eventemitter3';
