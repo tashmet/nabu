@@ -6,7 +6,6 @@ import 'mocha';
 import * as mockfs from 'mock-fs';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import * as sinon from 'sinon';
 import * as sinonChai from 'sinon-chai';
 import * as fs from 'fs-extra';
 import * as chokidar from 'chokidar';
@@ -32,7 +31,7 @@ describe('Directory', () => {
 
   describe('read', () => {
     it('should read documents from file system', async () => {
-      let docs = await dir.read();
+      const docs = await dir.read();
 
       expect(docs).to.eql({
         doc1: {foo: 'bar'},
@@ -62,7 +61,7 @@ describe('Directory', () => {
 
     describe('file added in directory', () => {
       it('should trigger document-updated event', (done) => {
-        dir.on('document-updated', (id: string, data: Object) => {
+        dir.on('document-updated', (id: string, data: any) => {
           expect(id).to.eql('doc1');
           expect(data).to.eql({foo: 'bar'});
           done();
@@ -74,7 +73,7 @@ describe('Directory', () => {
 
     describe('file updated in directory', () => {
       it('should trigger document-updated event', (done) => {
-        dir.on('document-updated', (id: string, data: Object) => {
+        dir.on('document-updated', (id: string, data: any) => {
           expect(id).to.eql('doc1');
           expect(data).to.eql({foo: 'bar'});
           done();

@@ -4,7 +4,6 @@ import {expect} from 'chai';
 import 'mocha';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import * as sinon from 'sinon';
 import * as sinonChai from 'sinon-chai';
 import * as mockfs from 'mock-fs';
 import * as fs from 'fs-extra';
@@ -30,7 +29,7 @@ describe('File', () => {
 
   describe('read', () => {
     it('should read documents from file system', async () => {
-      let docs = await new File(serializer, 'collection.json').read();
+      const docs = await new File(serializer, 'collection.json').read();
 
       expect(docs).to.eql({
         doc1: {foo: 'bar'},
@@ -39,7 +38,7 @@ describe('File', () => {
     });
 
     it('should get an empty list of documents from file that does not exist', async () => {
-      let docs = await new File(serializer, 'noSuchFile.json').read();
+      const docs = await new File(serializer, 'noSuchFile.json').read();
 
       return expect(docs).to.be.empty;
     });
@@ -65,7 +64,7 @@ describe('File', () => {
       });
 
       it('should trigger document-updated event', (done) => {
-        file.on('document-updated', (id: string, data: Object) => {
+        file.on('document-updated', (id: string, data: any) => {
           expect(id).to.eql('doc1');
           expect(data).to.eql({foo: 'bar'});
           done();
@@ -82,7 +81,7 @@ describe('File', () => {
       });
 
       it('should trigger document-updated event when a document has changed', (done) => {
-        file.on('document-updated', (id: string, data: Object) => {
+        file.on('document-updated', (id: string, data: any) => {
           expect(id).to.eql('doc2');
           expect(data).to.eql({foo: 'new content'});
           done();

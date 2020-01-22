@@ -10,8 +10,8 @@ chai.use(chaiAsPromised);
 describe('YamlSerializer', () => {
   describe('deserialize', () => {
     it('should provide a plain object for valid yaml', () => {
-      let ys = new YamlSerializer({});
-      let yaml = dedent`
+      const ys = new YamlSerializer({});
+      const yaml = dedent`
         title: foo
         list:
           - item1
@@ -23,16 +23,16 @@ describe('YamlSerializer', () => {
     });
 
     it('should reject promise with error for invalid yaml', () => {
-      let ys = new YamlSerializer({});
-      let yaml = dedent`
+      const ys = new YamlSerializer({});
+      const yaml = dedent`
         foo: *unknownAlias
       `;
       return expect(ys.deserialize(Buffer.from(yaml, 'utf-8'))).to.be.rejectedWith(Error);
     });
 
     it('should handle yaml front matter', () => {
-      let ys = new YamlSerializer({frontMatter: true});
-      let yaml = dedent`
+      const ys = new YamlSerializer({frontMatter: true});
+      const yaml = dedent`
         ---
         title: foo
         ---
@@ -44,8 +44,8 @@ describe('YamlSerializer', () => {
     });
 
     it('should store content under custom key', () => {
-      let ys = new YamlSerializer({frontMatter: true, contentKey: 'text'});
-      let yaml = dedent`
+      const ys = new YamlSerializer({frontMatter: true, contentKey: 'text'});
+      const yaml = dedent`
         ---
         title: foo
         ---
@@ -59,9 +59,9 @@ describe('YamlSerializer', () => {
 
   describe('serialize', () => {
     it('should provide yaml data for a plain object', () => {
-      let ys = new YamlSerializer({});
-      let plain = {title: 'foo', list: ['item1', 'item2']};
-      let expected = dedent`
+      const ys = new YamlSerializer({});
+      const plain = {title: 'foo', list: ['item1', 'item2']};
+      const expected = dedent`
         title: foo
         list:
           - item1
@@ -73,9 +73,9 @@ describe('YamlSerializer', () => {
     });
 
     it('should handle yaml front matter', () => {
-      let ys = new YamlSerializer({frontMatter: true});
-      let plain = {title: 'foo', _content: 'Content goes here'};
-      let expected = dedent`
+      const ys = new YamlSerializer({frontMatter: true});
+      const plain = {title: 'foo', _content: 'Content goes here'};
+      const expected = dedent`
         ---
         title: foo
         ---
@@ -87,9 +87,9 @@ describe('YamlSerializer', () => {
     });
 
     it('should serialize content under custom key', () => {
-      let ys = new YamlSerializer({frontMatter: true, contentKey: 'text'});
-      let plain = {title: 'foo', text: 'Content goes here'};
-      let expected = dedent`
+      const ys = new YamlSerializer({frontMatter: true, contentKey: 'text'});
+      const plain = {title: 'foo', text: 'Content goes here'};
+      const expected = dedent`
         ---
         title: foo
         ---

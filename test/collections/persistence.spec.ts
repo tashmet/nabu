@@ -17,7 +17,7 @@ class MockPersistenceAdapter extends EventEmitter implements PersistenceAdapter 
     return Promise.resolve({});
   }
 
-  public write(id: string, data: Object): Promise<void> {
+  public write(id: string, data: any): Promise<void> {
     return Promise.resolve();
   }
 
@@ -27,8 +27,8 @@ class MockPersistenceAdapter extends EventEmitter implements PersistenceAdapter 
 }
 
 describe('PersistenceCollection', () => {
-  let cache = new MemoryCollection('test');
-  let adapter = new MockPersistenceAdapter();
+  const cache = new MemoryCollection('test');
+  const adapter = new MockPersistenceAdapter();
   let collection: Collection;
 
   const read = sinon.stub(adapter, 'read');
@@ -49,7 +49,7 @@ describe('PersistenceCollection', () => {
 
   describe('find', () => {
     it('should find all documents', async () => {
-      let docs = await collection.find();
+      const docs = await collection.find();
 
       expect(docs).to.have.lengthOf(2);
       expect(docs[0]).to.have.property('_id', 'doc1');
@@ -57,7 +57,7 @@ describe('PersistenceCollection', () => {
     });
 
     it('should filter with selector', async () => {
-      let docs = await collection.find({'_id': 'doc2'});
+      const docs = await collection.find({'_id': 'doc2'});
 
       expect(docs).to.have.lengthOf(1);
       expect(docs[0]).to.have.property('_id', 'doc2');
