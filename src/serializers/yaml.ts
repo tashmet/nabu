@@ -61,7 +61,7 @@ export interface YamlConfig {
    *
    * default: false
    */
-  sortKeys?: boolean | Function;
+  sortKeys?: boolean | ((a: any, b: any) => number);
 
   /**
    * Set max line width for serialized output.
