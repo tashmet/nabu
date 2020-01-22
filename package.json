@@ -4,6 +4,7 @@
   "description": "Ziqquratu file system persistence",
   "scripts": {
     "commit": "git-cz",
+    "lint": "eslint --cache --ext .js,.ts src/",
     "test": "mocha --opts mocha.opts"
   },
   "main": "dist/index.js",
@@ -35,12 +36,15 @@
     "@types/showdown": "^1.9.3",
     "@types/sinon": "^7.5.1",
     "@types/sinon-chai": "^3.2.3",
+    "@typescript-eslint/eslint-plugin": "^2.17.0",
+    "@typescript-eslint/parser": "^2.17.0",
     "@ziqquratu/ziqquratu": "^0.9.6",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "commitizen": "^4.0.3",
     "cz-conventional-changelog": "^3.0.2",
     "dedent": "^0.7.0",
+    "eslint": "^6.8.0",
     "gulp": "^3.9.1",
     "gulp-tslint": "^8.1.1",
     "gulp-typescript": "^3.1.4",
