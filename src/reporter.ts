@@ -1,7 +1,7 @@
 import {provider} from '@ziqquratu/ziqquratu';
 import {FSWatcher} from 'chokidar';
+import * as log from 'fancy-log';
 
-const log = require('fancy-log');
 const chalk = require('chalk');
 
 @provider({
