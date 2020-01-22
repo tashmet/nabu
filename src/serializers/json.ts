@@ -1,15 +1,7 @@
 import {Serializer, SerializerFactory} from '../interfaces';
 
-export class JsonSerializerFactory extends SerializerFactory {
-  public create(): Serializer {
-    return new JsonSerializer();
-  }
-}
-
-export const json = () => new JsonSerializerFactory();
-
 class JsonSerializer implements Serializer {
-  public deserialize(buffer: Buffer): Promise<Object> {
+  public deserialize(buffer: Buffer): Promise<Record<string, any>> {
     return Promise.resolve(JSON.parse(buffer.toString('utf-8')));
   }
 
@@ -17,3 +9,11 @@ class JsonSerializer implements Serializer {
     return Promise.resolve(Buffer.from(JSON.stringify(obj), 'utf-8'));
   }
 }
+
+export class JsonSerializerFactory extends SerializerFactory {
+  public create(): Serializer {
+    return new JsonSerializer();
+  }
+}
+
+export const json = () => new JsonSerializerFactory();

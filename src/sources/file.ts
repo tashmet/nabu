@@ -8,27 +8,6 @@ import {
   FileConfig, FileSystemConfig, PersistenceAdapter, ObjectMap, Serializer
 } from '../interfaces';
 
-export class FileCollectionFactory extends CollectionFactory {
-  constructor(private config: FileConfig) {
-    super('nabu.FileSystemConfig', 'chokidar.FSWatcher');
-  }
-
-  public create(name: string): Collection {
-    return this.resolve((fsConfig: FileSystemConfig, watcher: FSWatcher) => {
-      return new PersistenceCollection(
-        new File(
-          this.config.serializer.create(),
-          this.config.path,
-          fsConfig.watch ? watcher : undefined
-        ),
-        new MemoryCollection(name)
-      );
-    });
-  }
-}
-
-export const file = (config: FileConfig) => new FileCollectionFactory(config);
-
 export class File extends EventEmitter implements PersistenceAdapter {
   private buffer: ObjectMap = {};
 
@@ -49,13 +28,13 @@ export class File extends EventEmitter implements PersistenceAdapter {
   public async read(): Promise<ObjectMap> {
     try {
       const buffer = await fs.readFile(this.path);
-      return this.set(<ObjectMap>await this.serializer.deserialize(buffer));
+      return this.set(await this.serializer.deserialize(buffer) as ObjectMap);
     } catch (err) {
       return this.set({});
     }
   }
 
-  public async write(id: string, data: Object): Promise<void> {
+  public async write(id: string, data: any): Promise<void> {
     await this.read();
     this.buffer[id] = data;
     return this.flush();
@@ -86,7 +65,7 @@ export class File extends EventEmitter implements PersistenceAdapter {
       each(this.updated(old), (doc, id) => {
         this.emit('document-updated', id, doc);
       });
-      for (let id of this.removed(old)) {
+      for (const id of this.removed(old)) {
         this.emit('document-removed', id);
       }
     }
@@ -110,3 +89,24 @@ export class File extends EventEmitter implements PersistenceAdapter {
     return obj;
   }
 }
+
+export class FileCollectionFactory extends CollectionFactory {
+  constructor(private config: FileConfig) {
+    super('nabu.FileSystemConfig', 'chokidar.FSWatcher');
+  }
+
+  public create(name: string): Collection {
+    return this.resolve((fsConfig: FileSystemConfig, watcher: FSWatcher) => {
+      return new PersistenceCollection(
+        new File(
+          this.config.serializer.create(),
+          this.config.path,
+          fsConfig.watch ? watcher : undefined
+        ),
+        new MemoryCollection(name)
+      );
+    });
+  }
+}
+
+export const file = (config: FileConfig) => new FileCollectionFactory(config);

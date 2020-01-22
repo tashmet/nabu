@@ -2,7 +2,7 @@ import {Converter, ConverterFactory, Serializer, SerializerFactory} from '../int
 import {merge, omit} from 'lodash';
 
 import jsYaml = require('js-yaml');
-let yamlFront = require('yaml-front-matter');
+const yamlFront = require('yaml-front-matter');
 
 /**
  * Configuration options for the YAML serializer.
@@ -95,18 +95,6 @@ export interface YamlConfig {
   condenseFlow?: boolean;
 }
 
-export class YamlSerializerFactory extends SerializerFactory {
-  public constructor(private config: YamlConfig) {
-    super();
-  }
-
-  public create(): Serializer {
-    return new YamlSerializer(this.config);
-  }
-}
-
-export const yaml = (config?: YamlConfig) => new YamlSerializerFactory(config || {});
-
 const defaultOptions: YamlConfig = {
   frontMatter: false,
   contentKey: '_content',
@@ -134,7 +122,7 @@ export class YamlSerializer implements Serializer {
   public async deserialize(buffer: Buffer): Promise<object> {
     const data = buffer.toString('utf-8');
     if (this.config.frontMatter) {
-      let doc = yamlFront.loadFront(data);
+      const doc = yamlFront.loadFront(data);
       let content = doc.__content.trim();
       if (this.frontMatterConverter) {
         content = await this.frontMatterConverter.publish(content);
@@ -148,10 +136,10 @@ export class YamlSerializer implements Serializer {
   }
 
   public async serialize(data: any): Promise<Buffer> {
-    let options = omit(this.config, ['frontMatter', 'contentKey']);
+    const options = omit(this.config, ['frontMatter', 'contentKey']);
     if (this.config.frontMatter) {
       const key = this.config.contentKey as string;
-      let frontMatter = jsYaml.safeDump(omit(data, key), options);
+      const frontMatter = jsYaml.safeDump(omit(data, key), options);
       let output = '---\n' + frontMatter + '---';
       if (data[key]) {
         output += '\n' + data[key].replace(/^\s+|\s+$/g, '');
@@ -162,3 +150,15 @@ export class YamlSerializer implements Serializer {
     }
   }
 }
+
+export class YamlSerializerFactory extends SerializerFactory {
+  public constructor(private config: YamlConfig) {
+    super();
+  }
+
+  public create(): Serializer {
+    return new YamlSerializer(this.config);
+  }
+}
+
+export const yaml = (config?: YamlConfig) => new YamlSerializerFactory(config || {});

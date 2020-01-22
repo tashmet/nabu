@@ -67,16 +67,16 @@ export interface FileSystemConfig {
   watch: boolean;
 }
 
-export type ObjectMap = {[id: string]: Object};
+export type ObjectMap = {[id: string]: any};
 
 export interface PersistenceAdapter {
-  write(id: string, data: Object): Promise<void>;
+  write(id: string, data: any): Promise<void>;
 
   read(): Promise<ObjectMap>;
 
   remove(id: string): Promise<void>;
 
-  on(event: 'document-updated', fn: (id: string, data: Object) => void): PersistenceAdapter;
+  on(event: 'document-updated', fn: (id: string, data: any) => void): PersistenceAdapter;
 
   on(event: 'document-removed', fn: (id: string) => void): PersistenceAdapter;
 }
