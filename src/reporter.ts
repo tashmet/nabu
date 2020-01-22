@@ -1,8 +1,7 @@
 import {provider} from '@ziqquratu/ziqquratu';
 import {FSWatcher} from 'chokidar';
 import * as log from 'fancy-log';
-
-const chalk = require('chalk');
+import * as chalk from 'chalk';
 
 @provider({
   key: 'nabu.FileSystemReporter',
