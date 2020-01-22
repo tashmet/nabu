@@ -3,6 +3,7 @@
   "version": "0.23.0",
   "description": "Ziqquratu file system persistence",
   "scripts": {
+    "commit": "git-cz",
     "test": "mocha --opts mocha.opts"
   },
   "main": "dist/index.js",
@@ -37,6 +38,8 @@
     "@ziqquratu/ziqquratu": "^0.9.6",
     "chai": "^4.0.2",
     "chai-as-promised": "^7.1.1",
+    "commitizen": "^4.0.3",
+    "cz-conventional-changelog": "^3.0.2",
     "dedent": "^0.7.0",
     "gulp": "^3.9.1",
     "gulp-tslint": "^8.1.1",
@@ -53,5 +56,10 @@
   },
   "peerDependencies": {
     "@ziqquratu/ziqquratu": "^0.9.6"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }
