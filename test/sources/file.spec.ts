@@ -3,9 +3,9 @@ import {File} from '../../src/sources/file';
 import {expect} from 'chai';
 import 'mocha';
 import * as chai from 'chai';
-import * as chaiAsPromised from 'chai-as-promised';
-import * as sinonChai from 'sinon-chai';
-import * as mockfs from 'mock-fs';
+import chaiAsPromised from 'chai-as-promised';
+import sinonChai from 'sinon-chai';
+import mockfs from 'mock-fs';
 import * as fs from 'fs-extra';
 import * as chokidar from 'chokidar';
 

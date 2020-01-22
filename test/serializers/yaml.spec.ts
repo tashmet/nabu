@@ -2,8 +2,8 @@ import {YamlSerializer} from '../../src/serializers/yaml';
 import {expect} from 'chai';
 import 'mocha';
 import * as chai from 'chai';
-import * as chaiAsPromised from 'chai-as-promised';
-import * as dedent from 'dedent';
+import chaiAsPromised from 'chai-as-promised';
+import dedent from 'dedent';
 
 chai.use(chaiAsPromised);
 

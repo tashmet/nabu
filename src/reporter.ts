@@ -1,6 +1,6 @@
 import {provider} from '@ziqquratu/ziqquratu';
 import {FSWatcher} from 'chokidar';
-import * as log from 'fancy-log';
+import log from 'fancy-log';
 import * as chalk from 'chalk';
 
 @provider({

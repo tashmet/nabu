@@ -1,14 +1,16 @@
 {
   "name": "@ziqquratu/nabu",
-  "version": "0.23.1",
+  "version": "0.23.2",
   "description": "Ziqquratu file system persistence",
   "scripts": {
+    "build": "tsc",
+    "clean": "rimraf dist",
     "commit": "git-cz",
     "lint": "eslint --cache --ext .js,.ts src/",
     "test": "mocha --opts mocha.opts"
   },
   "main": "dist/index.js",
-  "types": "dts/index.d.ts",
+  "types": "dist/index.d.ts",
   "author": "Björn Andersson",
   "license": "MIT",
   "dependencies": {
@@ -53,6 +55,7 @@
     "harmonize": "^2.0.0",
     "mocha": "^3.4.2",
     "mock-fs": "^4.10.4",
+    "rimraf": "^3.0.0",
     "run-sequence": "^2.0.0",
     "sinon": "^8.1.1",
     "sinon-chai": "^3.4.0",

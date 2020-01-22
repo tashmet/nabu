@@ -3,10 +3,10 @@ import {Directory} from '../../src/sources/directory';
 import {join} from 'path';
 import {expect} from 'chai';
 import 'mocha';
-import * as mockfs from 'mock-fs';
+import mockfs from 'mock-fs';
 import * as chai from 'chai';
-import * as chaiAsPromised from 'chai-as-promised';
-import * as sinonChai from 'sinon-chai';
+import chaiAsPromised from 'chai-as-promised';
+import sinonChai from 'sinon-chai';
 import * as fs from 'fs-extra';
 import * as chokidar from 'chokidar';
 
