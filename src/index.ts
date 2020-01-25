@@ -5,7 +5,7 @@ export {file} from './sources/file';
 export {directory} from './sources/directory';
 export * from './interfaces';
 
-import {component, Provider} from '@ziqquratu/ziqquratu';
+import {component, Logger, Provider} from '@ziqquratu/ziqquratu';
 import {FileSystemReporter} from './reporter';
 import {FileSystemConfig} from './interfaces';
 import {FileCollectionFactory} from './sources/file';
@@ -21,6 +21,11 @@ import * as chokidar from 'chokidar';
     })),
     Provider.ofInstance<FileSystemConfig>('nabu.FileSystemConfig', {
       watch: false,
+    }),
+    Provider.ofFactory({
+      key: 'nabu.Logger',
+      inject: ['ziqquratu.Logger'],
+      create: (logger: Logger) => logger.inScope('nabu')
     })
   ],
   factories: [
