@@ -26,6 +26,10 @@ export class PersistenceCollection extends EventEmitter implements Collection {
     this.populatePromise = this.populate();
   }
 
+  public toString(): string {
+    return `persistence collection '${this.name}' using ${this.adapter.toString()}`;
+  }
+
   public async upsert(doc: any): Promise<any> {
     await this.adapter.write(doc._id, doc);
     return this.cache.upsert(doc);

@@ -25,6 +25,10 @@ export class File extends EventEmitter implements PersistenceAdapter {
     }
   }
 
+  public toString(): string {
+    return `file '${this.path}'`;
+  }
+
   public async read(): Promise<ObjectMap> {
     try {
       const buffer = await fs.readFile(this.path);

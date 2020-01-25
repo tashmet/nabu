@@ -25,6 +25,10 @@ export class Directory extends EventEmitter implements PersistenceAdapter {
     }
   }
 
+  public toString(): string {
+    return `directory '${this.path}'`;
+  }
+
   public async read(): Promise<ObjectMap> {
     const result: ObjectMap = {};
     for (const file of await fs.readdir(this.path)) {
