@@ -2,12 +2,12 @@
 
 ## Description
 
-Nabu is a set of tools for reading and writing Ziggurat content on disk. It allows us to store collections in files with support for common formats like JSON, YAML or Markdown.
+Nabu is a set of tools for reading and writing Ziqquratu content on disk. It allows us to store collections in files with support for common formats like JSON, YAML or Markdown.
 
 ## Installation
 
 ```text
-$ npm install @ziggurat/nabu
+$ npm install @ziqquratu/nabu
 ```
 
 ## Usage
@@ -17,7 +17,7 @@ The package exports a component that should be imported as a dependency in your 
 ```typescript
 @component({
   dependencies: [
-    import('@ziggurat/nabu')
+    import('@ziqquratu/nabu')
   ],
   providers: [
     Provider.ofInstance<FileSystemConfig>('nabu.FileSystemConfig', {
