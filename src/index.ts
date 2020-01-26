@@ -6,7 +6,6 @@ export {directory} from './sources/directory';
 export * from './interfaces';
 
 import {component, Logger, Provider} from '@ziqquratu/ziqquratu';
-import {FileSystemReporter} from './reporter';
 import {FileSystemConfig} from './interfaces';
 import {FileCollectionFactory} from './sources/file';
 import {DirectoryCollectionFactory} from './sources/directory';
@@ -14,7 +13,6 @@ import * as chokidar from 'chokidar';
 
 @component({
   providers: [
-    FileSystemReporter,
     Provider.ofInstance<chokidar.FSWatcher>('chokidar.FSWatcher', chokidar.watch([], {
       ignoreInitial: true,
       persistent: true
