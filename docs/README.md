@@ -17,7 +17,7 @@ The package exports a component that should be imported as a dependency in your 
 ```typescript
 @component({
   dependencies: [
-    import('@ziggurat/nabu')
+    import('@ziqquratu/nabu')
   ],
   providers: [
     Provider.ofInstance<FileSystemConfig>('nabu.FileSystemConfig', {
