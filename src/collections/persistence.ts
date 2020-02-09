@@ -21,6 +21,21 @@ export class PersistenceCursor<T = any> implements Cursor<T> {
     return this.cursor.limit(count);
   }
 
+  public async next(): Promise<T | null> {
+    await this.populatePromise;
+    return this.cursor.next();
+  }
+  
+  public async hasNext(): Promise<boolean> {
+    await this.populatePromise;
+    return this.cursor.hasNext();
+  }
+
+  public async forEach(iterator: (doc: T) => void): Promise<void> {
+    await this.populatePromise;
+    return this.cursor.forEach(iterator);
+  }
+
   public async toArray(): Promise<T[]> {
     await this.populatePromise;
     return this.cursor.toArray();
