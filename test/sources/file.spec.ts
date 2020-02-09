@@ -46,7 +46,7 @@ describe('File', () => {
 
   describe('write', () => {
     it('should write a new collection to file', async () => {
-      await new File(serializer, 'collection.json').write('doc1', {});
+      await new File(serializer, 'collection.json').write([{_id: 'doc1'}]);
 
       return expect(fs.readFile('collection.json', 'utf-8')).to.eventually.eql(
         '{"doc1":{},"doc2":{"foo":"bar"}}');

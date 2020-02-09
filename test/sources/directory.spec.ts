@@ -48,7 +48,7 @@ describe('Directory', () => {
 
   describe('write', () => {
     it('should write a new collection to file', async () => {
-      await dir.write('doc1', {});
+      await dir.write([{_id: 'doc1'}]);
 
       return expect(fs.readFile('testdir/doc1.json', 'utf-8')).to.eventually.eql('{}');
     });

@@ -1,6 +1,6 @@
 import {FSWatcher} from 'chokidar';
 import {EventEmitter} from 'eventemitter3';
-import {cloneDeep, difference, each, intersection, isEqual, keys, transform} from 'lodash';
+import {cloneDeep, difference, each, intersection, isEqual, keys, omit, transform} from 'lodash';
 import * as fs from 'fs-extra';
 import {Collection, CollectionFactory, MemoryCollection} from '@ziqquratu/ziqquratu';
 import {PersistenceCollection} from '../collections/persistence';
@@ -38,15 +38,19 @@ export class File extends EventEmitter implements PersistenceAdapter {
     }
   }
 
-  public async write(id: string, data: any): Promise<void> {
+  public async write(docs: any[]): Promise<void> {
     await this.read();
-    this.buffer[id] = data;
+    for (const doc of docs) {
+      this.buffer[doc._id] = omit(doc, ['_id']);
+    }
     return this.flush();
   }
 
-  public async remove(id: string): Promise<void> {
+  public async remove(ids: string[]): Promise<void> {
     await this.read();
-    delete this.buffer[id];
+    for (const id of ids) {
+      delete this.buffer[id];
+    }
     return this.flush();
   }
 

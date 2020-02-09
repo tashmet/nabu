@@ -70,11 +70,11 @@ export interface FileSystemConfig {
 export type ObjectMap = {[id: string]: any};
 
 export interface PersistenceAdapter {
-  write(id: string, data: any): Promise<void>;
+  write(docs: ObjectMap): Promise<void>;
 
   read(): Promise<ObjectMap>;
 
-  remove(id: string): Promise<void>;
+  remove(ids: string[]): Promise<void>;
 
   on(event: 'document-updated', fn: (id: string, data: any) => void): PersistenceAdapter;
 

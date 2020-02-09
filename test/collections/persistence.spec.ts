@@ -17,11 +17,11 @@ class MockPersistenceAdapter extends EventEmitter implements PersistenceAdapter 
     return Promise.resolve({});
   }
 
-  public write(id: string, data: any): Promise<void> {
+  public write(docs: any[]): Promise<void> {
     return Promise.resolve();
   }
 
-  public remove(id: string): Promise<void> {
+  public remove(ids: string[]): Promise<void> {
     return Promise.resolve();
   }
 }
@@ -49,7 +49,7 @@ describe('PersistenceCollection', () => {
 
   describe('find', () => {
     it('should find all documents', async () => {
-      const docs = await collection.find();
+      const docs = await collection.find().toArray();
 
       expect(docs).to.have.lengthOf(2);
       expect(docs[0]).to.have.property('_id', 'doc1');
@@ -57,18 +57,26 @@ describe('PersistenceCollection', () => {
     });
 
     it('should filter with selector', async () => {
-      const docs = await collection.find({'_id': 'doc2'});
+      const docs = await collection.find({'_id': 'doc2'}).toArray();
 
       expect(docs).to.have.lengthOf(1);
       expect(docs[0]).to.have.property('_id', 'doc2');
     });
   });
 
-  describe('upsert', () => {
+  describe('insertOne', () => {
     it('should write to persistence adapter', async () => {
-      await collection.upsert({_id: 'doc1'});
+      await collection.insertOne({_id: 'doc3'});
 
-      expect(write).to.have.been.calledWith('doc1', {_id: 'doc1'});
+      expect(write).to.have.been.calledWith([{_id: 'doc3'}]);
+    });
+  });
+  
+  describe('insertMany', () => {
+    it('should write to persistence adapter', async () => {
+      await collection.insertMany([{_id: 'doc4'}, {_id: 'doc5'}]);
+
+      expect(write).to.have.been.calledWith([{_id: 'doc4'}, {_id: 'doc5'}]);
     });
   });
 

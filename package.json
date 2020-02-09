@@ -1,6 +1,6 @@
 {
   "name": "@ziqquratu/nabu",
-  "version": "0.23.5",
+  "version": "0.24.0",
   "description": "Ziqquratu file system persistence",
   "scripts": {
     "build": "tsc",
@@ -45,7 +45,7 @@
     "@types/sinon-chai": "^3.2.3",
     "@typescript-eslint/eslint-plugin": "^2.17.0",
     "@typescript-eslint/parser": "^2.17.0",
-    "@ziqquratu/ziqquratu": "^1.0.0-alpha.1",
+    "@ziqquratu/ziqquratu": "^1.0.0-alpha.2",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "commitizen": "^4.0.3",
@@ -61,7 +61,7 @@
     "typescript": "^3.7.0"
   },
   "peerDependencies": {
-    "@ziqquratu/ziqquratu": "^1.0.0-alpha.0"
+    "@ziqquratu/ziqquratu": "^1.0.0-alpha.2"
   },
   "config": {
     "commitizen": {

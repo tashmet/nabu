@@ -1,5 +1,6 @@
 import {FSWatcher} from 'chokidar';
 import {EventEmitter} from 'eventemitter3';
+import {omit} from 'lodash';
 import {basename, dirname, join} from 'path';
 import * as fs from 'fs-extra';
 import {Collection, CollectionFactory, MemoryCollection} from '@ziqquratu/ziqquratu';
@@ -37,13 +38,17 @@ export class Directory extends EventEmitter implements PersistenceAdapter {
     return result;
   }
 
-  public async write(id: string, data: any): Promise<void> {
-    const path = join(this.path, `${id}.${this.extension}`);
-    await fs.writeFile(path, await this.serializer.serialize(data));
+  public async write(docs: any[]): Promise<void> {
+    for (const doc of docs) {
+      const path = join(this.path, `${doc._id}.${this.extension}`);
+      await fs.writeFile(path, await this.serializer.serialize(omit(doc, ['_id'])));
+    }
   }
 
-  public async remove(id: string): Promise<void> {
-    return fs.remove(join(this.path, `${id}.${this.extension}`));
+  public async remove(ids: string[]): Promise<void> {
+    for (const id of ids) {
+      await fs.remove(join(this.path, `${id}.${this.extension}`));
+    }
   }
 
   private async loadFile(path: string): Promise<any> {
