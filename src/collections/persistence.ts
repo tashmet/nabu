@@ -1,55 +1,9 @@
-import {Collection, Cursor, ReplaceOneOptions, SortingDirection} from '@ziqquratu/ziqquratu';
+import {Collection, Cursor, ReplaceOneOptions} from '@ziqquratu/ziqquratu';
 import {PersistenceAdapter, ObjectMap} from '../interfaces';
 import {EventEmitter} from 'eventemitter3';
 import {merge} from 'lodash';
 
-export class PersistenceCursor<T = any> implements Cursor<T> {
-  public constructor(
-    private cursor: Cursor<T>,
-    private populatePromise: Promise<void>
-  ) {}
-
-  public sort(key: string, direction: SortingDirection): Cursor<T> {
-    return this.cursor.sort(key, direction);
-  }
-
-  public skip(count: number): Cursor<T> {
-    return this.cursor.skip(count);
-  }
-
-  public limit(count: number): Cursor<T> {
-    return this.cursor.limit(count);
-  }
-
-  public async next(): Promise<T | null> {
-    await this.populatePromise;
-    return this.cursor.next();
-  }
-  
-  public async hasNext(): Promise<boolean> {
-    await this.populatePromise;
-    return this.cursor.hasNext();
-  }
-
-  public async forEach(iterator: (doc: T) => void): Promise<void> {
-    await this.populatePromise;
-    return this.cursor.forEach(iterator);
-  }
-
-  public async toArray(): Promise<T[]> {
-    await this.populatePromise;
-    return this.cursor.toArray();
-  }
-
-  public async count(applySkipLimit = true): Promise<number> {
-    await this.populatePromise;
-    return this.cursor.count(applySkipLimit);
-  }
-}
-
 export class PersistenceCollection extends EventEmitter implements Collection {
-  private populatePromise: Promise<void>;
-
   public constructor(
     private adapter: PersistenceAdapter,
     private cache: Collection,
@@ -67,7 +21,6 @@ export class PersistenceCollection extends EventEmitter implements Collection {
     adapter.on('document-removed', (id: string) => {
       cache.deleteOne({_id: id});
     });
-    this.populatePromise = this.populate();
   }
 
   public toString(): string {
@@ -85,7 +38,6 @@ export class PersistenceCollection extends EventEmitter implements Collection {
   }
   
   public async replaceOne(selector: object, doc: any, options: ReplaceOneOptions = {}): Promise<any> {
-    await this.populatePromise;
     const old = await this.cache.findOne(selector);
     if (old) {
       if (doc._id && doc._id !== old._id) {
@@ -100,11 +52,10 @@ export class PersistenceCollection extends EventEmitter implements Collection {
   }
 
   public find(selector?: object): Cursor<any> {
-    return new PersistenceCursor(this.cache.find(selector), this.populatePromise);
+    return this.cache.find(selector);
   }
 
   public async findOne(selector: any): Promise<any> {
-    await this.populatePromise;
     return this.cache.findOne(selector);
   }
 
@@ -122,18 +73,19 @@ export class PersistenceCollection extends EventEmitter implements Collection {
     return affected;
   }
 
+  public async populate(): Promise<Collection> {
+    const data: ObjectMap = await this.adapter.read();
+    for (const id of Object.keys(data)) {
+      await this.load(id, data[id]);
+    }
+    return this;
+  }
+
   public get name(): string {
     return this.cache.name;
   }
 
   private async load(id: string, doc: Record<string, any>): Promise<any> {
     return this.cache.replaceOne({_id: id}, merge({}, doc, {_id: id}), {upsert: true});
-  }
-
-  private async populate(): Promise<void> {
-    const data: ObjectMap = await this.adapter.read();
-    for (const id of Object.keys(data)) {
-      await this.load(id, data[id]);
-    }
   }
 }

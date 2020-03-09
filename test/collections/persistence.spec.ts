@@ -39,7 +39,7 @@ describe('PersistenceCollection', () => {
       doc1: {},
       doc2: {}
     }));
-    collection = new PersistenceCollection(adapter, cache);
+    collection = await (new PersistenceCollection(adapter, cache).populate());
   });
 
   after(() => {

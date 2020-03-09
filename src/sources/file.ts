@@ -103,8 +103,8 @@ export class FileCollectionFactory extends CollectionFactory {
     super('nabu.FileSystemConfig', 'chokidar.FSWatcher');
   }
 
-  public create(name: string): Collection {
-    return this.resolve((fsConfig: FileSystemConfig, watcher: FSWatcher) => {
+  public create(name: string): Promise<Collection> {
+    return this.resolve(async (fsConfig: FileSystemConfig, watcher: FSWatcher) => {
       return new PersistenceCollection(
         new File(
           this.config.serializer.create(),
@@ -112,7 +112,7 @@ export class FileCollectionFactory extends CollectionFactory {
           fsConfig.watch ? watcher : undefined
         ),
         new MemoryCollection(name)
-      );
+      ).populate();
     });
   }
 }
