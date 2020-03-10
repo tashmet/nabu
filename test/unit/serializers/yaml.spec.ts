@@ -1,4 +1,4 @@
-import {YamlSerializer} from '../../src/serializers/yaml';
+import {YamlSerializer} from '../../../src/serializers/yaml';
 import {expect} from 'chai';
 import 'mocha';
 import * as chai from 'chai';

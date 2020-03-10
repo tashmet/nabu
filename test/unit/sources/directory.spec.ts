@@ -1,5 +1,5 @@
-import {json} from '../../src/serializers/json';
-import {Directory} from '../../src/sources/directory';
+import {json} from '../../../src/serializers/json';
+import {Directory} from '../../../src/sources/directory';
 import {join} from 'path';
 import {expect} from 'chai';
 import 'mocha';
