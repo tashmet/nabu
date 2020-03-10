@@ -1,7 +1,8 @@
-import {Collection, Cursor, ReplaceOneOptions} from '@ziqquratu/ziqquratu';
+import {Collection, Cursor, ReplaceOneOptions, QueryOptions} from '@ziqquratu/ziqquratu';
 import {PersistenceAdapter, ObjectMap} from '../interfaces';
 import {EventEmitter} from 'eventemitter3';
 import {merge} from 'lodash';
+import ObjectID from 'bson-objectid';
 
 export class PersistenceCollection extends EventEmitter implements Collection {
   public constructor(
@@ -28,11 +29,19 @@ export class PersistenceCollection extends EventEmitter implements Collection {
   }
 
   public async insertOne(doc: any): Promise<any> {
+    if (!doc.hasOwnProperty('_id')) {
+      doc._id = new ObjectID().toHexString()
+    }
     await this.adapter.write([doc]);
     return this.cache.insertOne(doc);
   }
   
   public async insertMany(docs: any[]): Promise<any[]> {
+    for (const doc of docs) {
+      if (!doc.hasOwnProperty('_id')) {
+        doc._id = new ObjectID().toHexString()
+      }
+    }
     await this.adapter.write(docs);
     return this.cache.insertMany(docs);
   }
@@ -43,16 +52,16 @@ export class PersistenceCollection extends EventEmitter implements Collection {
       if (doc._id && doc._id !== old._id) {
         await this.adapter.remove([old._id]);
       }
-      await this.adapter.write([doc]);
-      await this.cache.replaceOne(selector, doc, options);
+      await this.adapter.write([Object.assign({}, {_id: old._id}, doc)]);
+      return this.cache.replaceOne(selector, doc, options);
     } else if (options.upsert) {
-      await this.insertOne(doc);
+      return this.insertOne(doc);
     }
     return null;
   }
 
-  public find(selector?: object): Cursor<any> {
-    return this.cache.find(selector);
+  public find(selector?: object, options?: QueryOptions): Cursor<any> {
+    return this.cache.find(selector, options);
   }
 
   public async findOne(selector: any): Promise<any> {

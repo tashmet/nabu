@@ -41,6 +41,9 @@ export class File extends EventEmitter implements PersistenceAdapter {
   public async write(docs: any[]): Promise<void> {
     await this.read();
     for (const doc of docs) {
+      if (doc._id === undefined) {
+        throw Error('Failed trying to store document without ID');
+      }
       this.buffer[doc._id] = omit(doc, ['_id']);
     }
     return this.flush();
@@ -55,6 +58,9 @@ export class File extends EventEmitter implements PersistenceAdapter {
   }
 
   private async flush(): Promise<void> {
+    if (Object.keys(this.buffer).length === 0) {
+      return fs.unlinkSync(this.path);
+    }
     return fs.writeFile(this.path, await this.serializer.serialize(this.buffer));
   }
 
