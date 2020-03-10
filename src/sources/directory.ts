@@ -14,6 +14,7 @@ export class Directory extends EventEmitter implements PersistenceAdapter {
     private serializer: Serializer,
     private path: string,
     private extension: string,
+    create: boolean,
     watcher?: FSWatcher
   ) {
     super();
@@ -23,6 +24,9 @@ export class Directory extends EventEmitter implements PersistenceAdapter {
         .on('change', filePath => this.onFileUpdated(filePath))
         .on('unlink', filePath => this.onFileRemoved(filePath))
         .add(path);
+    }
+    if (!fs.existsSync(path) && create){
+      fs.mkdirSync(path);
     }
   }
 
@@ -84,6 +88,7 @@ export class DirectoryCollectionFactory extends CollectionFactory {
           this.config.serializer.create(),
           this.config.path,
           this.config.extension,
+          this.config.create || false,
           fsConfig.watch ? watcher : undefined
         ),
         new MemoryCollection(name)
