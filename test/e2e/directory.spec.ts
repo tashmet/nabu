@@ -11,11 +11,11 @@ import * as fs from 'fs-extra';
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
-function stored(id: string | number): any {
+function storedDoc(id: string | number): any {
   return fs.readJsonSync(`test/e2e/testCollection/${id}.json`);
 }
 
-function listFiles(): string[] {
+function storedFiles(): string[] {
   return fs.readdirSync('test/e2e/testCollection');
 }
 
@@ -73,14 +73,14 @@ describe('directory', () => {
       );
       expect(doc.amount).to.eql(10);
       expect(doc).to.haveOwnProperty('_id');
-      expect(stored(doc._id))
+      expect(storedDoc(doc._id))
         .to.eql({item: { category: 'brownies', type: 'blondie' }, amount: 10 });
     });
     it('should throw when trying to insert a document with already existing ID', () => {
       expect(col.insertOne(
         {_id: 1, item: { category: 'brownies', type: 'blondie' }, amount: 10 }
       )).to.eventually.be.rejected;
-      expect(stored(1))
+      expect(storedDoc(1))
         .to.eql({item: { category: 'cake', type: 'chiffon' }, amount: 10 });
     });
   });
@@ -96,9 +96,9 @@ describe('directory', () => {
       expect(docs[1].amount).to.eql(12);
       expect(docs[0]).to.haveOwnProperty('_id');
       expect(docs[1]).to.haveOwnProperty('_id');
-      expect(stored(docs[0]._id))
+      expect(storedDoc(docs[0]._id))
         .to.eql({item: { category: 'brownies', type: 'blondie' }, amount: 10 });
-      expect(stored(docs[1]._id))
+      expect(storedDoc(docs[1]._id))
         .to.eql({item: { category: 'brownies', type: 'baked' }, amount: 12 });
     });
     it('should throw when trying to insert a document with already existing ID', () => {
@@ -116,7 +116,7 @@ describe('directory', () => {
       );
       expect(doc._id).to.eql(1);
       expect(doc.amount).to.eql(20);
-      expect(stored(1)).to.eql({item: { category: 'brownies', type: 'blondie' }, amount: 20 });
+      expect(storedDoc(1)).to.eql({item: { category: 'brownies', type: 'blondie' }, amount: 20 });
     });
     it('should return null if no document matched selector', async () => {
       const doc = await col.replaceOne(
@@ -129,14 +129,14 @@ describe('directory', () => {
         {_id: 1}, { amount: 20 }
       );
       expect(doc.item).to.eql(undefined);
-      expect(stored(1)).to.eql({ amount: 20 });
+      expect(storedDoc(1)).to.eql({ amount: 20 });
     });
     it('should upsert when specified', async () => {
       const doc = await col.replaceOne(
         {_id: 6}, { amount: 20 }, {upsert: true}
       );
       expect(doc.amount).to.eql(20);
-      expect(stored(doc._id)).to.eql({ amount: 20 });
+      expect(storedDoc(doc._id)).to.eql({ amount: 20 });
     });
   });
 
@@ -208,10 +208,10 @@ describe('directory', () => {
       return expect(col.deleteMany({_id: 7})).to.eventually.be.empty;
     });
     it('should return a list of deleted documents', async () => {
-      const storedCount = listFiles().length;
+      const storedCount = storedFiles().length;
       const docs = await col.deleteMany({'item.category': 'cookies'});
       expect(docs).to.have.length(2);
-      expect(listFiles().length).to.eql(storedCount - 2);
+      expect(storedFiles().length).to.eql(storedCount - 2);
     });
     it('should have removed selected documents', async () => {
       await col.deleteMany({'item.category': 'cookies'});
