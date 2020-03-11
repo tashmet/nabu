@@ -11,6 +11,14 @@ import * as fs from 'fs-extra';
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
+function stored(id: string | number): any {
+  return fs.readJsonSync(`test/e2e/testCollection/${id}.json`);
+}
+
+function hasStored(id: string | number): boolean {
+  return fs.existsSync(`test/e2e/testCollection/${id}.json`);
+}
+
 describe('directory', () => {
   @component({
     dependencies: [import('../../dist')],
@@ -65,11 +73,15 @@ describe('directory', () => {
       );
       expect(doc.amount).to.eql(10);
       expect(doc).to.haveOwnProperty('_id');
+      expect(stored(doc._id))
+        .to.eql({item: { category: 'brownies', type: 'blondie' }, amount: 10 });
     });
     it('should throw when trying to insert a document with already existing ID', () => {
-      return expect(col.insertOne(
+      expect(col.insertOne(
         {_id: 1, item: { category: 'brownies', type: 'blondie' }, amount: 10 }
       )).to.eventually.be.rejected;
+      expect(stored(1))
+        .to.eql({item: { category: 'cake', type: 'chiffon' }, amount: 10 });
     });
   });
 
