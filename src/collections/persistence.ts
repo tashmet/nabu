@@ -29,21 +29,15 @@ export class PersistenceCollection extends EventEmitter implements Collection {
   }
 
   public async insertOne(doc: any): Promise<any> {
-    if (!doc.hasOwnProperty('_id')) {
-      doc._id = new ObjectID().toHexString()
-    }
-    await this.adapter.write([doc]);
-    return this.cache.insertOne(doc);
+    const res = await this.cache.insertOne(doc);
+    await this.adapter.write([res]);
+    return res;
   }
   
   public async insertMany(docs: any[]): Promise<any[]> {
-    for (const doc of docs) {
-      if (!doc.hasOwnProperty('_id')) {
-        doc._id = new ObjectID().toHexString()
-      }
-    }
+    const res = await this.cache.insertMany(docs);
     await this.adapter.write(docs);
-    return this.cache.insertMany(docs);
+    return res;
   }
   
   public async replaceOne(selector: object, doc: any, options: ReplaceOneOptions = {}): Promise<any> {
