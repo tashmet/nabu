@@ -2,7 +2,6 @@ import {Collection, Cursor, ReplaceOneOptions, QueryOptions} from '@ziqquratu/zi
 import {PersistenceAdapter, ObjectMap} from '../interfaces';
 import {EventEmitter} from 'eventemitter3';
 import {merge} from 'lodash';
-import ObjectID from 'bson-objectid';
 
 export class PersistenceCollection extends EventEmitter implements Collection {
   public constructor(
