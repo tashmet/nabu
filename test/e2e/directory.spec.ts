@@ -60,6 +60,8 @@ describe('directory', () => {
 
   afterEach(async () => {
     await col.deleteMany({});
+    // TODO: Collection interface needs this method.
+    (col as any).removeAllListeners();
   });
 
   after(() => {
@@ -82,6 +84,15 @@ describe('directory', () => {
       )).to.eventually.be.rejected;
       expect(storedDoc(1))
         .to.eql({item: { category: 'cake', type: 'chiffon' }, amount: 10 });
+    });
+    it('should emit a document-upserted event', (done) => {
+      col.on('document-upserted', (doc) => {
+        expect(doc).to.eql({_id: 6, item: { category: 'brownies', type: 'blondie' }, amount: 10 });
+        done();
+      });
+      col.insertOne(
+        {_id: 6, item: { category: 'brownies', type: 'blondie' }, amount: 10 }
+      );
     });
   });
 
@@ -106,6 +117,17 @@ describe('directory', () => {
         {item: { category: 'brownies', type: 'blondie' }, amount: 10 },
         {_id: 1, item: { category: 'brownies', type: 'baked' }, amount: 12 },
       ])).to.eventually.be.rejected;
+    });
+    it('should emit a document-upserted event for each document', async () => {
+      const docs: any[] = [];
+      col.on('document-upserted', (doc) => {
+        docs.push(doc);
+      });
+      await col.insertMany([
+        {item: { category: 'brownies', type: 'blondie' }, amount: 10 },
+        {item: { category: 'brownies', type: 'baked' }, amount: 12 },
+      ]);
+      return expect(docs.length).to.eql(2);
     });
   });
 
@@ -137,6 +159,15 @@ describe('directory', () => {
       );
       expect(doc.amount).to.eql(20);
       expect(storedDoc(doc._id)).to.eql({ amount: 20 });
+    });
+    it('should emit a document-upserted event', (done) => {
+      col.on('document-upserted', (doc) => {
+        expect(doc).to.eql({_id: 1, item: { category: 'brownies', type: 'blondie' }, amount: 20 });
+        done();
+      });
+      col.replaceOne(
+        {_id: 1}, {item: { category: 'brownies', type: 'blondie' }, amount: 20 }
+      );
     });
   });
 
