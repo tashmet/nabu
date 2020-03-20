@@ -64,7 +64,7 @@ export class PersistenceCollection extends EventEmitter implements Collection {
   public async deleteOne(selector: any): Promise<any> {
     const affected = await this.cache.deleteOne(selector);
     if (affected) {
-      await this.adapter.remove(affected._id);
+      await this.adapter.remove([affected._id]);
     }
     return affected;
   }
